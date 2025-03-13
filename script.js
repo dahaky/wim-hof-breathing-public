@@ -1,8 +1,9 @@
 // Константы
 const SMALL_SIZE = 'min(50vw, 200px)';
 const LARGE_SIZE = 'min(75vw, 300px)';
-const PHASE_DURATION = 1; // 1 секунда на фазу (вдох или выдох)
-const PREPARATION_DURATION = 7000; // 7 секунд подготовки
+const PHASE_DURATION = 1.97; // 1.97 секунды на фазу (118 секунд / 60 фаз)
+const LAST_PHASE_DURATION = PHASE_DURATION * 2; // 3.94 секунды для последних вдоха и выдоха
+const PREPARATION_DURATION = 17000; // 17 секунд
 const AUDIO_START_DELAY = 2000; // Задержка перед анимацией
 
 // Глобальные переменные
@@ -114,6 +115,7 @@ function showProgressbar() {
 
 function updateProgressbar(cycleNumber) {
     const progress = (cycleNumber / 60) * 100;
+    progressBar.style.transition = `width ${PHASE_DURATION}s linear`;
     progressBar.style.width = `${progress}%`;
 }
 
@@ -166,9 +168,11 @@ function startHoldPhase(phaseName, time, size, isInhalation, callback) {
 
 function resumePhase() {
     if (currentPhase === 'ВДОХ') {
-        startPhase('ВДОХ', LARGE_SIZE, true, PHASE_DURATION, nextCallback);
+        const duration = (currentCycle === 58) ? LAST_PHASE_DURATION : PHASE_DURATION;
+        startPhase('ВДОХ', LARGE_SIZE, true, duration, nextCallback);
     } else if (currentPhase === 'ВЫДОХ') {
-        startPhase('ВЫДОХ', SMALL_SIZE, false, PHASE_DURATION, nextCallback);
+        const duration = (currentCycle === 59) ? LAST_PHASE_DURATION : PHASE_DURATION;
+        startPhase('ВЫДОХ', SMALL_SIZE, false, duration, nextCallback);
     } else if (currentPhase === 'Задержка дыхания после выдоха') {
         startHoldPhase('Задержка дыхания после выдоха', remainingTime, SMALL_SIZE, false, nextCallback);
     } else if (currentPhase === 'Глубокий вдох') {
@@ -188,16 +192,25 @@ function performCycle(index, callback) {
         showProgressbar();
     }
     const isInhalation = index % 2 === 0;
-    startPhase(isInhalation ? 'ВДОХ' : 'ВЫДОХ', isInhalation ? LARGE_SIZE : SMALL_SIZE, isInhalation, PHASE_DURATION, () => {
-        updateProgressbar(index + 1);
-        if (index < 59) {
-            performCycle(index + 1, callback);
-        } else {
-            stopAudio();
-            hideProgressbar();
-            callback();
-        }
-    });
+    const isLastPhase = index === 58 || index === 59;
+    const duration = isLastPhase ? LAST_PHASE_DURATION : PHASE_DURATION;
+    
+    circle.style.transition = `width ${duration}s ease-in-out, height ${duration}s ease-in-out, border-color ${duration}s ease-in-out, box-shadow ${duration}s ease-in-out, opacity 0.5s ease`;
+    
+    startPhase(isInhalation ? 'ВДОХ' : 'ВЫДОХ', 
+               isInhalation ? LARGE_SIZE : SMALL_SIZE, 
+               isInhalation, 
+               duration, 
+               () => {
+                   updateProgressbar(index + 1);
+                   if (index < 59) {
+                       performCycle(index + 1, callback);
+                   } else {
+                       stopAudio();
+                       hideProgressbar();
+                       callback();
+                   }
+               });
 }
 
 function performBreathHold() {
@@ -233,6 +246,19 @@ async function startSession(useSound) {
     container.classList.remove('initial-visible');
     container.classList.add('preparing');
     if (soundEnabled) playAudio(startAudioBuffer);
+
+    const preparationTimer = document.getElementById('preparationTimer');
+    let remainingTime = 17;
+    preparationTimer.textContent = remainingTime;
+    const timerInterval = setInterval(() => {
+        remainingTime--;
+        preparationTimer.textContent = remainingTime;
+        if (remainingTime <= 0) {
+            clearInterval(timerInterval);
+            preparationTimer.textContent = '';
+        }
+    }, 1000);
+
     setTimeout(() => {
         container.classList.remove('preparing');
         container.classList.add('breathing-visible');
