@@ -1,8 +1,10 @@
 // Константы
 const SMALL_SIZE = 'min(50vw, 200px)';
 const LARGE_SIZE = 'min(75vw, 300px)';
-const PHASE_DURATION = 1.97; // 1.97 секунды на фазу (118 секунд / 60 фаз)
-const LAST_PHASE_DURATION = PHASE_DURATION * 2; // 3.94 секунды для последних вдоха и выдоха
+const PHASE_DURATION = 1.87; // 1.87 секунды на фазу
+const LAST_PHASE_DURATION = 3; // 3 секунды для последних вдоха и выдоха (1 + 1 + 1)
+const ANIMATION_DURATION = 0.5; // 0.5 секунды на увеличение и уменьшение круга
+const HOLD_DURATION = PHASE_DURATION - (ANIMATION_DURATION * 2); // 0.87 секунды задержка
 const PREPARATION_DURATION = 17000; // 17 секунд
 const AUDIO_START_DELAY = 2000; // Задержка перед анимацией
 
@@ -167,11 +169,12 @@ function startHoldPhase(phaseName, time, size, isInhalation, callback) {
 }
 
 function resumePhase() {
+    const isLastPhase = currentCycle === 58 || currentCycle === 59;
     if (currentPhase === 'ВДОХ') {
-        const duration = (currentCycle === 58) ? LAST_PHASE_DURATION : PHASE_DURATION;
+        const duration = isLastPhase ? 1 : ANIMATION_DURATION;
         startPhase('ВДОХ', LARGE_SIZE, true, duration, nextCallback);
     } else if (currentPhase === 'ВЫДОХ') {
-        const duration = (currentCycle === 59) ? LAST_PHASE_DURATION : PHASE_DURATION;
+        const duration = isLastPhase ? 1 : ANIMATION_DURATION;
         startPhase('ВЫДОХ', SMALL_SIZE, false, duration, nextCallback);
     } else if (currentPhase === 'Задержка дыхания после выдоха') {
         startHoldPhase('Задержка дыхания после выдоха', remainingTime, SMALL_SIZE, false, nextCallback);
@@ -194,23 +197,44 @@ function performCycle(index, callback) {
     const isInhalation = index % 2 === 0;
     const isLastPhase = index === 58 || index === 59;
     const duration = isLastPhase ? LAST_PHASE_DURATION : PHASE_DURATION;
-    
-    circle.style.transition = `width ${duration}s ease-in-out, height ${duration}s ease-in-out, border-color ${duration}s ease-in-out, box-shadow ${duration}s ease-in-out, opacity 0.5s ease`;
-    
-    startPhase(isInhalation ? 'ВДОХ' : 'ВЫДОХ', 
-               isInhalation ? LARGE_SIZE : SMALL_SIZE, 
-               isInhalation, 
-               duration, 
-               () => {
-                   updateProgressbar(index + 1);
-                   if (index < 59) {
-                       performCycle(index + 1, callback);
-                   } else {
-                       stopAudio();
-                       hideProgressbar();
-                       callback();
-                   }
-               });
+
+    if (isLastPhase) {
+        circle.style.transition = `width 1s ease-in-out, height 1s ease-in-out, border-color 1s ease-in-out, box-shadow 1s ease-in-out, opacity 0.5s ease`;
+        startPhase(isInhalation ? 'ВДОХ' : 'ВЫДОХ', isInhalation ? LARGE_SIZE : SMALL_SIZE, isInhalation, 1, () => {
+            setTimeout(() => {
+                circle.style.transition = `width 1s ease-in-out, height 1s ease-in-out, border-color 1s ease-in-out, box-shadow 1s ease-in-out, opacity 0.5s ease`;
+                setCircle(isInhalation ? SMALL_SIZE : LARGE_SIZE, !isInhalation);
+                setTimeout(() => {
+                    updateProgressbar(index + 1);
+                    if (index < 59) {
+                        performCycle(index + 1, callback);
+                    } else {
+                        stopAudio();
+                        hideProgressbar();
+                        callback();
+                    }
+                }, 1000);
+            }, 1000);
+        });
+    } else {
+        circle.style.transition = `width ${ANIMATION_DURATION}s ease-in-out, height ${ANIMATION_DURATION}s ease-in-out, border-color ${ANIMATION_DURATION}s ease-in-out, box-shadow ${ANIMATION_DURATION}s ease-in-out, opacity 0.5s ease`;
+        startPhase(isInhalation ? 'ВДОХ' : 'ВЫДОХ', isInhalation ? LARGE_SIZE : SMALL_SIZE, isInhalation, ANIMATION_DURATION, () => {
+            setTimeout(() => {
+                circle.style.transition = `width ${ANIMATION_DURATION}s ease-in-out, height ${ANIMATION_DURATION}s ease-in-out, border-color ${ANIMATION_DURATION}s ease-in-out, box-shadow ${ANIMATION_DURATION}s ease-in-out, opacity 0.5s ease`;
+                setCircle(isInhalation ? SMALL_SIZE : LARGE_SIZE, !isInhalation);
+                setTimeout(() => {
+                    updateProgressbar(index + 1);
+                    if (index < 59) {
+                        performCycle(index + 1, callback);
+                    } else {
+                        stopAudio();
+                        hideProgressbar();
+                        callback();
+                    }
+                }, ANIMATION_DURATION * 1000);
+            }, HOLD_DURATION * 1000);
+        });
+    }
 }
 
 function performBreathHold() {
