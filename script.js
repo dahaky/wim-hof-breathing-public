@@ -33,10 +33,10 @@ async function initAudio() {
         return await audioContext.decodeAudioData(arrayBuffer);
     };
 
-    startAudioBuffer = await loadAudio('/breathing-app/start.MP3');
-    breathingAudioBuffer = await loadAudio('/breathing-app/breathing.MP3');
-    delayAudioBuffer = await loadAudio('/breathing-app/delay.MP3');
-    exhalationAudioBuffer = await loadAudio('/breathing-app/exhalation.MP3');
+    startAudioBuffer = await loadAudio('start.MP3');
+    breathingAudioBuffer = await loadAudio('breathing.MP3');
+    delayAudioBuffer = await loadAudio('delay.MP3');
+    exhalationAudioBuffer = await loadAudio('exhalation.MP3');
 }
 
 function playAudio(buffer, loop = false) {
