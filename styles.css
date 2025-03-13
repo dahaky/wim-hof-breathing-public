@@ -80,8 +80,14 @@ h1 {
     box-sizing: border-box;
     height: 0;
     overflow: hidden;
-    transition: height 0.5s ease;
+    transition: height 0.5s ease, padding 0.5s ease;
     z-index: 10;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.settings[style*="height: 0"] {
+    padding: 0;
 }
 
 .container.initial-visible .settings { display: flex; }
@@ -95,16 +101,17 @@ h1 {
 }
 
 .settings label {
-    font-size: clamp(12px, 3vw, 16px);
+    font-size: clamp(60px, 15vw, 80px);
     margin-bottom: 0.5vh;
 }
 
 .settings input[type="range"] {
-    width: clamp(120px, 25vw, 180px);
+    width: clamp(600px, 125vw, 900px);
+    height: 20px;
 }
 
 .settings span {
-    font-size: clamp(12px, 3vw, 16px);
+    font-size: clamp(60px, 15vw, 80px);
     margin-top: 0.5vh;
 }
 
@@ -115,12 +122,13 @@ h1 {
     background: none;
     border: none;
     color: #F5F5F5;
-    font-size: clamp(14px, 4vw, 20px);
+    font-size: clamp(12px, 3vw, 16px);
     cursor: pointer;
-    transition: transform 0.2s ease;
 }
 
-.closeSettings:hover { transform: scale(1.1); }
+.closeSettings:hover {
+    color: #CCCCCC;
+}
 
 #breathingSection {
     display: none;
@@ -147,7 +155,18 @@ h1 {
     transition: opacity 0.5s ease;
 }
 
-.container.preparing #preparationText { opacity: 1; }
+#preparationTimer {
+    font-size: clamp(50px, 15vw, 100px);
+    color: #F5F5F5;
+    font-weight: bold;
+    margin: 2vh 0;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.container.preparing #preparationText, .container.preparing #preparationTimer {
+    opacity: 1;
+}
 
 .circle-section {
     position: relative;
@@ -180,7 +199,7 @@ h1 {
     background-color: transparent;
     border: 3px solid #FFAB91;
     box-shadow: 0 0 20px rgba(255, 171, 145, 0.6);
-    transition: width 1s ease-in-out, height 1s ease-in-out, border-color 1s ease-in-out, box-shadow 1s ease-in-out, opacity 0.5s ease;
+    transition: width 1.97s ease-in-out, height 1.97s ease-in-out, border-color 1.97s ease-in-out, box-shadow 1.97s ease-in-out, opacity 0.5s ease;
     position: relative;
     display: flex;
     align-items: center;
@@ -247,7 +266,7 @@ h1 {
     background-color: #81C784;
     width: 0;
     border-radius: 10px;
-    transition: width 1s linear;
+    transition: width 1.97s linear;
 }
 
 .ripple {
