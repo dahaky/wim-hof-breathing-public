@@ -55,6 +55,7 @@ h1 {
     border-radius: 14px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s ease, transform 0.3s ease;
+    touch-action: manipulation;
 }
 
 .settingsButton:hover, button:hover, .link-button:hover {
@@ -82,8 +83,8 @@ h1 {
     overflow: hidden;
     transition: height 0.5s ease, padding 0.5s ease;
     z-index: 10;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
 }
 
 .settings[style*="height: 0"] {
@@ -93,25 +94,50 @@ h1 {
 .container.initial-visible .settings { display: flex; }
 
 .settings div {
-    margin: 1.5vh 0;
+    margin: 3vh 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: min(85vw, 320px);
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
 }
 
 .settings label {
-    font-size: clamp(60px, 15vw, 80px);
+    font-size: clamp(36px, 9vw, 48px);
     margin-bottom: 0.5vh;
 }
 
 .settings input[type="range"] {
-    width: clamp(600px, 125vw, 900px);
-    height: 20px;
+    width: clamp(200px, 50vw, 300px);
+    height: 15px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #4A5366;
+    border-radius: 10px;
+    outline: none;
+}
+
+.settings input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    background: #34C759;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.settings input[type="range"]::-moz-range-thumb {
+    width: 30px;
+    height: 30px;
+    background: #34C759;
+    border-radius: 50%;
+    cursor: pointer;
 }
 
 .settings span {
-    font-size: clamp(60px, 15vw, 80px);
+    font-size: clamp(36px, 9vw, 48px);
     margin-top: 0.5vh;
 }
 
@@ -124,6 +150,11 @@ h1 {
     color: #F5F5F5;
     font-size: clamp(12px, 3vw, 16px);
     cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .closeSettings:hover {
@@ -199,7 +230,7 @@ h1 {
     background-color: transparent;
     border: 3px solid #FFAB91;
     box-shadow: 0 0 20px rgba(255, 171, 145, 0.6);
-    transition: width 1.97s ease-in-out, height 1.97s ease-in-out, border-color 1.97s ease-in-out, box-shadow 1.97s ease-in-out, opacity 0.5s ease;
+    transition: width 0.5s ease-in-out, height 0.5s ease-in-out, border-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out, opacity 0.5s ease;
     position: relative;
     display: flex;
     align-items: center;
@@ -266,7 +297,7 @@ h1 {
     background-color: #81C784;
     width: 0;
     border-radius: 10px;
-    transition: width 1.97s linear;
+    transition: width 1.87s linear;
 }
 
 .ripple {
@@ -377,22 +408,53 @@ h1 {
 #modalNo:active { background-color: #C62828; }
 
 @media (max-width: 400px) and (orientation: portrait) {
-    h1 { font-size: clamp(14px, 5vw, 20px); }
-    .settingsButton, button, .link-button { 
-        width: min(90vw, 280px); 
-        padding: clamp(10px, 2vh, 16px) clamp(20px, 4vw, 30px); 
-        font-size: clamp(14px, 3.5vw, 18px); 
+    h1 {
+        font-size: clamp(16px, 4vw, 20px);
     }
-    #startButton { width: min(85vw, 280px); height: min(85vw, 280px); }
-    #startText { font-size: clamp(18px, 6vw, 28px); }
-    .settings input[type="range"] { width: clamp(100px, 20vw, 140px); }
-    .settings span, .settings label { font-size: clamp(10px, 2.5vw, 14px); }
-    #roundInfo { font-size: clamp(10px, 2.5vw, 14px); }
-    .progress-bar { height: clamp(6px, 1.5vw, 10px); }
-    #instruction { font-size: clamp(12px, 4vw, 16px); }
-    #timerInsideCircle { font-size: clamp(18px, 6vw, 28px); }
-    .controls-section { flex-direction: column; gap: 0.5vh; }
-    .modal-content { width: 90vw; }
-    .modal-content p { font-size: clamp(14px, 4vw, 18px); }
-    .modal-buttons button { font-size: clamp(12px, 3.5vw, 16px); }
+    .settingsButton, button, .link-button {
+        width: min(90vw, 300px);
+        padding: clamp(12px, 3vh, 16px) clamp(20px, 5vw, 30px);
+        font-size: clamp(14px, 4vw, 18px);
+        touch-action: manipulation;
+    }
+    #startButton {
+        width: min(80vw, 260px);
+        height: min(80vw, 260px);
+    }
+    #startText {
+        font-size: clamp(20px, 6vw, 30px);
+    }
+    .settings input[type="range"] {
+        width: clamp(180px, 45vw, 240px);
+        height: 12px;
+    }
+    .settings label, .settings span {
+        font-size: clamp(24px, 6vw, 32px);
+    }
+    #roundInfo {
+        font-size: clamp(12px, 3vw, 14px);
+    }
+    .progress-bar {
+        height: clamp(6px, 1.5vw, 8px);
+    }
+    #instruction {
+        font-size: clamp(14px, 4vw, 18px);
+    }
+    #timerInsideCircle {
+        font-size: clamp(20px, 6vw, 28px);
+    }
+    .controls-section {
+        flex-direction: row;
+        gap: 2vw;
+    }
+    .modal-content {
+        width: 90vw;
+    }
+    .modal-content p {
+        font-size: clamp(14px, 4vw, 16px);
+    }
+    .modal-buttons button {
+        font-size: clamp(12px, 3.5vw, 14px);
+        padding: clamp(10px, 2vh, 14px);
+    }
 }
