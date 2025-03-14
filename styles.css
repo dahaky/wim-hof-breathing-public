@@ -28,8 +28,9 @@ body {
 .container.breathing-visible { justify-content: space-between; }
 
 h1 {
-    margin: 1vh 0;
-    font-size: clamp(18px, 6vw, 28px);
+    margin: 2vh 0; /* Увеличили отступ */
+    font-size: clamp(20px, 6vw, 24px); /* 24px для мобильных */
+    color: #FFFFFF;
 }
 
 .initialView {
@@ -38,33 +39,34 @@ h1 {
     align-items: center;
     justify-content: center;
     flex-grow: 1;
-    gap: 2vh;
+    gap: 3vh; /* Увеличили расстояние между элементами */
 }
 
 .container.initial-visible .initialView { display: flex; }
 
 .settingsButton, button, .link-button {
-    width: min(85vw, 320px);
-    padding: clamp(12px, 2.5vh, 18px) clamp(25px, 5vw, 35px);
-    font-size: clamp(16px, 4.5vw, 22px);
+    width: 150px; /* Фиксированная ширина по макету */
+    height: 40px; /* Фиксированная высота по макету */
+    padding: 0; /* Убрали внутренние отступы */
+    font-size: clamp(14px, 4vw, 16px);
     font-weight: bold;
     cursor: pointer;
-    background-color: #34C759;
+    background-color: #007AFF; /* Синий цвет из макета */
     color: #FFFFFF;
     border: none;
-    border-radius: 14px;
+    border-radius: 10px; /* Закругление по макету */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s ease, transform 0.3s ease;
     touch-action: manipulation;
 }
 
 .settingsButton:hover, button:hover, .link-button:hover {
-    background-color: #2DA44E;
+    background-color: #005BB5; /* Более тёмный синий при наведении */
     transform: scale(1.02);
 }
 
 .settingsButton:active, button:active, .link-button:active {
-    background-color: #28A745;
+    background-color: #004A99; /* Ещё темнее при нажатии */
     transform: scale(0.98);
 }
 
@@ -250,10 +252,11 @@ h1 {
 }
 
 #startButton {
-    width: min(80vw, 320px);
-    height: min(80vw, 320px);
+    width: 260px; /* Фиксированный размер по макету */
+    height: 260px;
     border: 3px solid #90CAF9;
     box-shadow: 0 0 20px rgba(144, 202, 249, 0.6);
+    background-color: #2A2F3A; /* Цвет фона из макета */
     cursor: pointer;
     opacity: 1;
     transition: transform 0.3s ease;
@@ -276,9 +279,10 @@ h1 {
 }
 
 #startText {
-    font-size: clamp(22px, 8vw, 36px);
+    font-size: clamp(24px, 8vw, 36px);
     font-weight: bold;
-    color: #F5F5F5;
+    color: #FFFFFF;
+    text-transform: uppercase; /* Все буквы заглавные, как в макете */
 }
 
 .progress-bar {
@@ -409,17 +413,18 @@ h1 {
 
 @media (max-width: 400px) and (orientation: portrait) {
     h1 {
-        font-size: clamp(16px, 4vw, 20px);
+        font-size: clamp(16px, 4vw, 24px); /* Уточнили размер */
     }
     .settingsButton, button, .link-button {
-        width: min(90vw, 300px);
-        padding: clamp(12px, 3vh, 16px) clamp(20px, 5vw, 30px);
-        font-size: clamp(14px, 4vw, 18px);
+        width: 150px;
+        height: 40px;
+        padding: 0;
+        font-size: clamp(14px, 4vw, 16px);
         touch-action: manipulation;
     }
     #startButton {
-        width: min(80vw, 260px);
-        height: min(80vw, 260px);
+        width: 260px;
+        height: 260px;
     }
     #startText {
         font-size: clamp(20px, 6vw, 30px);
