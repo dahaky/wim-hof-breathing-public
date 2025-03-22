@@ -19,7 +19,6 @@ body {
     overflow: hidden;
 }
 
-/* Общие стили для экранов */
 .screen {
     position: absolute;
     top: 0;
@@ -89,11 +88,13 @@ body {
     padding: 20px;
     width: 100%;
     height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.settingsButton {
-    width: 100%;
-    max-width: 400px;
+.settings-button {
+    width: calc(100% - 40px);
     height: 60px;
     background: #777C78;
     border-radius: 17.6226px;
@@ -106,43 +107,53 @@ body {
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.settingsButton:hover {
+.settings-button:hover {
     background-color: #5E6360;
     transform: scale(1.02);
 }
 
 .start-button-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     padding: 20px;
     width: 100%;
     height: 484px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     flex-grow: 1;
 }
 
-#startButton {
-    width: 100%;
+.start-button {
+    width: calc(100% - 40px);
     max-width: 400px;
-    height: 391px;
+    height: auto;
+    aspect-ratio: 1 / 1;
     background: rgba(40, 155, 226, 0.2);
     border: 17.6226px solid #289BE2;
-    border-radius: 300px;
+    border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: transform 0.3s ease;
+    position: relative;
+    z-index: 1; /* Убедимся, что кнопка кликабельна */
 }
 
-#startButton:hover {
+.start-button:hover {
     transform: scale(1.05);
+}
+
+.button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
 #startText {
     width: 100%;
-    max-width: 400px;
     height: 32px;
     font-weight: 700;
     font-size: 26.434px;
@@ -314,7 +325,7 @@ body {
 }
 
 #completionMessage button, .link-button {
-    width: 100%;
+    width: calc(100% - 40px);
     max-width: 400px;
     height: 60px;
     background: #289BE2;
@@ -468,32 +479,17 @@ body {
         padding: 10px;
         height: auto;
     }
-    .settingsButton {
-        max-width: 90%;
-    }
     .start-button-container {
         padding: 10px;
         height: auto;
     }
-    #startButton {
-        max-width: 90vw;
-        height: 90vw;
-        max-height: 350px;
+    .start-button {
+        width: calc(100% - 20px);
+        max-width: calc(400px - 40px);
         border-width: 15px;
-        border-radius: 50%;
     }
     #startText {
         font-size: 24px;
         line-height: 28px;
-    }
-    .circle-section {
-        padding: 10px;
-    }
-    .circle {
-        width: min(70vw, 200px);
-        height: min(70vw, 200px);
-    }
-    .text-section {
-        padding: 10px;
     }
 }
