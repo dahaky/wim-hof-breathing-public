@@ -8,23 +8,19 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container initial-visible" id="container">
-        <div class="header">
-            <h1>Дыхательная практика по методу Вима Хофа</h1>
-        </div>
-        <div class="description">
-            <p>Техника дыхания Вима Хофа включает циклы глубокого ритмичного дыхания и задержек на выдохе. Этот метод повышает уровень кислорода в крови, улучшает выносливость и снижает уровень стресса. Практика состоит из 30 быстрых вдохов и выдохов, после которых следует задержка дыхания на выдохе, затем глубокий вдох и новая задержка на 15 секунд. Регулярные тренировки помогают укрепить иммунитет, повысить концентрацию и адаптацию к холоду.</p>
-        </div>
-        <div class="text-section">
-            <div id="roundInfo"></div>
-            <div id="preparationText">Готовимся к практике. Сядьте или лягте поудобнее и расслабьтесь</div>
-            <div id="preparationTimer"></div>
-        </div>
-        <div class="initialView">
+    <div class="container" id="container">
+        <!-- Экран 1: Начальный -->
+        <div class="screen initial-screen active" id="initialScreen">
+            <div class="header">
+                <h1>Дыхательная практика по методу Вима Хофа</h1>
+            </div>
+            <div class="description">
+                <p>Техника дыхания Вима Хофа включает циклы глубокого ритмичного дыхания и задержек на выдохе. Этот метод повышает уровень кислорода в крови, улучшает выносливость и снижает уровень стресса. Практика состоит из 30 быстрых вдохов и выдохов, после которых следует задержка дыхания на выдохе, затем глубокий вдох и новая задержка на 15 секунд. Регулярные тренировки помогают укрепить иммунитет, повысить концентрацию и адаптацию к холоду.</p>
+            </div>
             <div class="settings-button-container">
                 <button class="settingsButton" onclick="showSettings()">Настройки</button>
             </div>
-            <div class="circle-section">
+            <div class="start-button-container">
                 <div class="circle" id="startButton" onclick="showSoundModal()">
                     <div class="circle-content">
                         <div id="startText">НАЧАТЬ</div>
@@ -32,20 +28,18 @@
                 </div>
             </div>
         </div>
-        <div class="settings" id="settings">
-            <button class="closeSettings" onclick="closeSettings()">×</button>
-            <div>
-                <label>Начальная задержка дыхания (сек):</label>
-                <input type="range" id="initialBreathHoldTime" min="10" max="120" value="60">
-                <span id="initialBreathHoldTimeValue">60</span>
-            </div>
-            <div>
-                <label>Количество раундов:</label>
-                <input type="range" id="numberOfRounds" min="1" max="10" value="3">
-                <span id="numberOfRoundsValue">3</span>
+
+        <!-- Экран 2: Подготовка -->
+        <div class="screen preparation-screen" id="preparationScreen">
+            <div class="text-section">
+                <div id="roundInfo"></div>
+                <div id="preparationText">Готовимся к практике. Сядьте или лягте поудобнее и расслабьтесь</div>
+                <div id="preparationTimer"></div>
             </div>
         </div>
-        <div id="breathingSection">
+
+        <!-- Экран 3: Практика (дыхание) -->
+        <div class="screen breathing-screen" id="breathingScreen">
             <div class="circle-section">
                 <div id="instruction"></div>
                 <div class="circle" id="circle">
@@ -63,19 +57,42 @@
                 <button onclick="resetSession()" id="resetButton">Сброс</button>
             </div>
         </div>
-        <div id="completionMessage">
-            <p>Практика завершена, Вы молодец!</p>
-            <button onclick="resetSession()">Ещё раз</button>
-            <a href="https://plainly.ru/30-luchshikh-besplatnykh-ii-servisov" target="_blank" class="link-button">Посмотри, это интересно</a>
-        </div>
-    </div>
 
-    <div id="soundModal" class="modal">
-        <div class="modal-content">
-            <p>Вы хотите использовать звук? <br>На iOS/Android убедитесь, что устройство не в режиме "Без звука".</p>
-            <div class="modal-buttons">
-                <button id="modalYes" onclick="startSession(true)">Да</button>
-                <button id="modalNo" onclick="startSession(false)">Нет</button>
+        <!-- Экран 4: Задержка дыхания и выдох -->
+        <!-- Объединен с экраном 3 в текущей логике JS, отдельный экран не требуется -->
+
+        <!-- Экран 5: Завершение -->
+        <div class="screen completion-screen" id="completionScreen">
+            <div id="completionMessage">
+                <p>Практика завершена, Вы молодец!</p>
+                <button onclick="resetSession()">Ещё раз</button>
+                <a href="https://plainly.ru/30-luchshikh-besplatnykh-ii-servisov" target="_blank" class="link-button">Посмотри, это интересно</a>
+            </div>
+        </div>
+
+        <!-- Настройки (всплывающее окно) -->
+        <div class="settings" id="settings">
+            <button class="closeSettings" onclick="closeSettings()">×</button>
+            <div>
+                <label>Начальная задержка дыхания (сек):</label>
+                <input type="range" id="initialBreathHoldTime" min="10" max="120" value="60">
+                <span id="initialBreathHoldTimeValue">60</span>
+            </div>
+            <div>
+                <label>Количество раундов:</label>
+                <input type="range" id="numberOfRounds" min="1" max="10" value="3">
+                <span id="numberOfRoundsValue">3</span>
+            </div>
+        </div>
+
+        <!-- Модальное окно звука -->
+        <div id="soundModal" class="modal">
+            <div class="modal-content">
+                <p>Вы хотите использовать звук? <br>На iOS/Android убедитесь, что устройство не в режиме "Без звука".</p>
+                <div class="modal-buttons">
+                    <button id="modalYes" onclick="startSession(true)">Да</button>
+                    <button id="modalNo" onclick="startSession(false)">Нет</button>
+                </div>
             </div>
         </div>
     </div>
