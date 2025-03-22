@@ -1,8 +1,8 @@
 body {
-    background-color: #2C2C2C; /* Новый цвет фона из макета */
+    background-color: #2C2C2C;
     color: #FFFFFF;
     text-align: center;
-    font-family: 'Inter', sans-serif; /* Новый шрифт */
+    font-family: 'Inter', sans-serif;
     margin: 0;
     min-height: 100vh;
     display: flex;
@@ -17,194 +17,79 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 448px; /* Максимальная ширина из макета */
+    max-width: 440px; /* Ширина из макета */
     min-height: 100vh;
     padding: 0;
     box-sizing: border-box;
     position: relative;
+    background: #2C2C2C;
 }
 
-.container.initial-visible { justify-content: flex-start; }
-.container.breathing-visible { justify-content: space-between; }
-
-h1 {
-    margin: 0;
-    padding: 20px; /* Отступы из макета */
-    width: 100%;
-    max-width: 408px; /* Ширина текста из макета */
-    height: 72px; /* Высота из макета */
-    font-family: 'Inter', sans-serif;
-    font-size: 30px; /* Размер шрифта из макета */
-    font-weight: 700;
-    line-height: 36px; /* Высота строки из макета */
-    color: #FFFFFF;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
+.container.initial-visible {
+    justify-content: center; /* Центрирование для начального экрана */
 }
 
-.initialView {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    max-width: 448px;
-}
-
-.container.initial-visible .initialView { display: flex; }
-
-.settingsButton, button, .link-button {
-    width: 100%;
-    max-width: 408px; /* Ширина из макета */
-    height: 55px; /* Высота из макета */
-    padding: 7px 84px; /* Отступы из макета */
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    font-size: 23px; /* Размер шрифта из макета */
-    font-weight: 700;
-    line-height: 28px;
-    cursor: pointer;
-    background-color: #289BE2; /* Цвет из макета */
-    color: #FFFFFF;
-    border: none;
-    border-radius: 20px; /* Закругление из макета */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    touch-action: manipulation;
-}
-
-.settingsButton:hover, button:hover, .link-button:hover {
-    background-color: #1E7BBF;
-    transform: scale(1.02);
-}
-
-.settingsButton:active, button:active, .link-button:active {
-    background-color: #1A6BA3;
-    transform: scale(0.98);
-}
-
-.settingsButtonContainer {
-    width: 100%;
-    max-width: 448px;
-    height: 95px; /* Высота контейнера из макета */
-    padding: 20px; /* Отступы из макета */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.settings {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #000000;
-    padding: 2vh 0;
-    box-sizing: border-box;
-    height: 0;
-    overflow: hidden;
-    transition: height 0.5s ease, padding 0.5s ease;
-    z-index: 10;
-    border-top-left-radius: 40px;
-    border-top-right-radius: 40px;
-}
-
-.settings[style*="height: 0"] {
-    padding: 0;
-}
-
-.container.initial-visible .settings { display: flex; }
-
-.settings div {
-    margin: 3vh 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    padding: 0 10px;
-    box-sizing: border-box;
-}
-
-.settings label {
-    font-size: clamp(36px, 9vw, 48px);
-    margin-bottom: 0.5vh;
-}
-
-.settings input[type="range"] {
-    width: clamp(200px, 50vw, 300px);
-    height: 15px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: #4A5366;
-    border-radius: 10px;
-    outline: none;
-}
-
-.settings input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 30px;
-    height: 30px;
-    background: #34C759;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.settings input[type="range"]::-moz-range-thumb {
-    width: 30px;
-    height: 30px;
-    background: #34C759;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.settings span {
-    font-size: clamp(36px, 9vw, 48px);
-    margin-top: 0.5vh;
-}
-
-.closeSettings {
-    position: absolute;
-    top: 1vh;
-    right: 1vw;
-    background: none;
-    border: none;
-    color: #F5F5F5;
-    font-size: clamp(12px, 3vw, 16px);
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.closeSettings:hover {
-    color: #CCCCCC;
-}
-
-#breathingSection {
-    display: none;
-    width: 100%;
-    flex-grow: 1;
-    flex-direction: column;
-    align-items: center;
+.container.breathing-visible {
     justify-content: space-between;
 }
 
-.container.breathing-visible #breathingSection { display: flex; }
+/* Заголовок */
+.header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 50px 20px 0;
+    gap: 10px;
+    width: 440px;
+    height: 142px;
+}
 
-.text-section { width: 100%; text-align: center; }
+.header h1 {
+    width: 400px;
+    height: 72px;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 36px;
+    display: flex;
+    align-items: center;
+    color: #FFFFFF;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Описание */
+.description {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0 20px;
+    gap: 10px;
+    width: 440px;
+    height: 200px;
+}
+
+.description p {
+    width: 400px;
+    height: 180px;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 200;
+    font-size: 15px;
+    line-height: 18px;
+    color: #FFFFFF;
+    margin: 0 auto;
+    text-align: left;
+}
+
+/* Текстовая секция (для подготовки) */
+.text-section {
+    width: 100%;
+    text-align: center;
+}
 
 #roundInfo {
     font-size: clamp(12px, 3vw, 16px);
@@ -227,33 +112,130 @@ h1 {
     transition: opacity 0.5s ease;
 }
 
-.container.preparing #preparationText, .container.preparing #preparationTimer {
+.container.preparing #preparationText,
+.container.preparing #preparationTimer {
     opacity: 1;
 }
 
+/* Начальный экран */
+.initialView {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 440px;
+}
+
+.container.initial-visible .initialView {
+    display: flex;
+}
+
+/* Контейнер кнопки настроек */
+.settings-button-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    gap: 10px;
+    width: 440px;
+    height: 100px;
+}
+
+.settingsButton {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 6.16793px 74.0151px;
+    gap: 8.81px;
+    width: 400px;
+    height: 60px;
+    background: #777C78;
+    border-radius: 17.6226px;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20.266px;
+    line-height: 25px;
+    color: #FFFFFF;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.settingsButton:hover {
+    background-color: #5E6360;
+    transform: scale(1.02);
+}
+
+.settingsButton:active {
+    background-color: #4F5451;
+    transform: scale(0.98);
+}
+
+/* Круговая секция */
 .circle-section {
     width: 100%;
-    max-width: 448px;
-    height: 414px; /* Высота контейнера из макета */
+    max-width: 440px;
+    height: 484px;
     padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
-#instruction {
-    font-size: clamp(14px, 4.5vw, 20px);
-    max-width: 100%;
-    overflow-wrap: break-word;
-    color: #F5F5F5;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(245, 245, 245, 0.8);
-    transition: opacity 0.5s ease;
-    opacity: 0;
-    margin-bottom: 1vh;
-    position: absolute;
-    top: 0;
+#startButton {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 134px 0;
+    width: 400px;
+    height: 391px;
+    background: rgba(40, 155, 226, 0.2);
+    border: 17.6226px solid #289BE2;
+    border-radius: 300px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+#startButton:hover {
+    transform: scale(1.05);
+}
+
+#startButton:active {
+    transform: scale(0.98);
+}
+
+#startText {
+    width: 400px;
+    height: 32px;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 26.434px;
+    line-height: 32px;
+    color: #FFFFFF;
+    text-align: center;
+}
+
+/* Стили для breathingSection остаются без изменений */
+#breathingSection {
+    display: none;
+    width: 100%;
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.container.breathing-visible #breathingSection {
+    display: flex;
 }
 
 .circle {
@@ -282,22 +264,6 @@ h1 {
     box-shadow: 0 0 20px rgba(42, 47, 58, 0.6);
 }
 
-#startButton {
-    width: 408px; /* Размер из макета */
-    height: 408px; /* Установили круглый размер */
-    background-color: rgba(40, 155, 226, 0.2); /* Прозрачный фон из макета */
-    border: 20px solid #289BE2; /* Обводка из макета */
-    border-radius: 200px; /* Закругление для круга */
-    box-shadow: none; /* Убрали тень, так как в макете её нет */
-    cursor: pointer;
-    opacity: 1;
-    transition: transform 0.3s ease;
-    display: flex;
-}
-
-#startButton:hover { transform: scale(1.05); }
-#startButton:active { transform: scale(0.98); }
-
 .circle-content {
     display: flex;
     flex-direction: column;
@@ -307,18 +273,18 @@ h1 {
     height: 100%;
 }
 
-#startText {
-    font-family: 'Inter', sans-serif;
-    font-size: 30px; /* Размер шрифта из макета */
-    font-weight: 700;
-    line-height: 36px;
-    color: #FFFFFF;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    width: 240px; /* Ширина текста из макета */
-    height: 36px;
+#instruction {
+    font-size: clamp(14px, 4.5vw, 20px);
+    max-width: 100%;
+    overflow-wrap: break-word;
+    color: #F5F5F5;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(245, 245, 245, 0.8);
+    transition: opacity 0.5s ease;
+    opacity: 0;
+    margin-bottom: 1vh;
+    position: absolute;
+    top: 0;
 }
 
 .progress-bar {
@@ -379,7 +345,13 @@ h1 {
     gap: 1vw;
 }
 
-#pauseButton, #resetButton { display: none; }
+#pauseButton, #resetButton {
+    display: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #289BE2;
+    border-radius: 10px;
+}
 
 #completionMessage {
     display: none;
@@ -395,10 +367,18 @@ h1 {
     margin: 0.5vh 1vw;
     background-color: #289BE2;
     text-decoration: none;
+    padding: 7px 84px;
+    border-radius: 20px;
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 28px;
 }
 
-.link-button:hover { background-color: #1E7BBF; }
+.link-button:hover {
+    background-color: #1E7BBF;
+}
 
+/* Модальное окно */
 .modal {
     display: none;
     position: fixed;
@@ -439,80 +419,160 @@ h1 {
     font-size: clamp(14px, 4vw, 18px);
 }
 
-#modalYes { background-color: #34C759; }
-#modalYes:hover { background-color: #2DA44E; }
-#modalYes:active { background-color: #28A745; }
+#modalYes {
+    background-color: #34C759;
+}
 
-#modalNo { background-color: #FF3B30; }
-#modalNo:hover { background-color: #D32F2F; }
-#modalNo:active { background-color: #C62828; }
+#modalYes:hover {
+    background-color: #2DA44E;
+}
 
-@media (max-width: 400px) and (orientation: portrait) {
-    h1 {
-        font-size: 30px;
-        width: 100%;
-        max-width: 375px; /* Адаптируем под мобильные */
-        padding: 20px;
+#modalNo {
+    background-color: #FF3B30;
+}
+
+#modalNo:hover {
+    background-color: #D32F2F;
+}
+
+/* Настройки */
+.settings {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #000000;
+    padding: 2vh 0;
+    box-sizing: border-box;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.5s ease, padding 0.5s ease;
+    z-index: 10;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+}
+
+.settings[style*="height: 0"] {
+    padding: 0;
+}
+
+.container.initial-visible .settings {
+    display: flex;
+}
+
+.settings div {
+    margin: 3vh 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.settings label {
+    font-size: clamp(36px, 9vw, 48px);
+    margin-bottom: 0.5vh;
+}
+
+.settings input[type="range"] {
+    width: clamp(200px, 50vw, 300px);
+    height: 15px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #4A5366;
+    border-radius: 10px;
+    outline: none;
+}
+
+.settings input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    background: #34C759;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.settings span {
+    font-size: clamp(36px, 9vw, 48px);
+    margin-top: 0.5vh;
+}
+
+.closeSettings {
+    position: absolute;
+    top: 1vh;
+    right: 1vw;
+    background: none;
+    border: none;
+    color: #F5F5F5;
+    font-size: clamp(12px, 3vw, 16px);
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closeSettings:hover {
+    color: #CCCCCC;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 440px) and (orientation: portrait) {
+    .container {
+        max-width: 100%;
     }
-    .settingsButtonContainer {
+    .header {
         width: 100%;
-        max-width: 375px;
-        padding: 20px;
+        padding: 30px 10px 0;
     }
-    .settingsButton, button, .link-button {
+    .header h1 {
         width: 100%;
-        max-width: 335px; /* 375px - padding 20px с каждой стороны */
-        height: 55px;
-        padding: 7px 84px;
-        font-size: 23px;
-        touch-action: manipulation;
+        font-size: 24px;
+        line-height: 30px;
+    }
+    .description {
+        width: 100%;
+        padding: 0 10px;
+        height: auto;
+    }
+    .description p {
+        width: 100%;
+        height: auto;
+        font-size: 14px;
+        line-height: 16px;
+    }
+    .settings-button-container {
+        width: 100%;
+        padding: 10px;
+    }
+    .settingsButton {
+        width: 100%;
+        max-width: 90%;
     }
     .circle-section {
         width: 100%;
-        max-width: 375px;
-        padding: 20px;
+        height: auto;
+        padding: 10px;
     }
     #startButton {
-        width: 335px; /* 375px - padding 20px с каждой стороны */
-        height: 335px;
-        border-radius: 167.5px; /* Половина ширины для круга */
+        width: 90vw;
+        height: 90vw;
+        max-width: 350px;
+        max-height: 350px;
+        padding: 0;
+        border-width: 15px;
+        border-radius: 50%;
     }
     #startText {
-        font-size: 30px;
-        width: 240px;
-        height: 36px;
-    }
-    .settings input[type="range"] {
-        width: clamp(180px, 45vw, 240px);
-        height: 12px;
-    }
-    .settings label, .settings span {
-        font-size: clamp(24px, 6vw, 32px);
-    }
-    #roundInfo {
-        font-size: clamp(12px, 3vw, 14px);
-    }
-    .progress-bar {
-        height: clamp(6px, 1.5vw, 8px);
-    }
-    #instruction {
-        font-size: clamp(14px, 4vw, 18px);
-    }
-    #timerInsideCircle {
-        font-size: clamp(20px, 6vw, 28px);
-    }
-    .controls-section {
-        flex-direction: row;
-        gap: 2vw;
-    }
-    .modal-content {
-        width: 90vw;
-    }
-    .modal-content p {
-        font-size: clamp(14px, 4vw, 16px);
-    }
-    .modal-buttons button {
-        font-size: clamp(12px, 3.5vw, 14px);
-        padding: clamp(10px, 2vh, 14px);
+        width: 100%;
+        font-size: 24px;
+        line-height: 28px;
     }
 }
