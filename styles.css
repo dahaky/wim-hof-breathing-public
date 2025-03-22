@@ -43,11 +43,13 @@ body {
 .initial-screen {
     justify-content: center;
     gap: 10px;
+    padding: 0;
 }
 
 .header {
     padding: 50px 20px 0;
     width: 100%;
+    height: 142px;
 }
 
 .header h1 {
@@ -68,6 +70,7 @@ body {
 .description {
     padding: 0 20px;
     width: 100%;
+    height: 200px;
 }
 
 .description p {
@@ -85,6 +88,7 @@ body {
 .settings-button-container {
     padding: 20px;
     width: 100%;
+    height: 100px;
 }
 
 .settingsButton {
@@ -138,6 +142,7 @@ body {
 
 #startText {
     width: 100%;
+    max-width: 400px;
     height: 32px;
     font-weight: 700;
     font-size: 26.434px;
@@ -154,6 +159,7 @@ body {
 .text-section {
     width: 100%;
     text-align: center;
+    padding: 20px;
 }
 
 #roundInfo {
@@ -171,19 +177,20 @@ body {
     font-weight: bold;
 }
 
-/* Экран 3: Практика */
+/* Экран 3: Практика и задержка */
 .breathing-screen {
     justify-content: space-between;
+    padding: 20px;
 }
 
 .circle-section {
     width: 100%;
-    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
+    justify-content: center;
     flex-grow: 1;
+    position: relative;
 }
 
 #instruction {
@@ -288,9 +295,10 @@ body {
     cursor: pointer;
 }
 
-/* Экран 5: Завершение */
+/* Экран 4: Завершение */
 .completion-screen {
     justify-content: center;
+    padding: 20px;
 }
 
 #completionMessage {
@@ -302,6 +310,7 @@ body {
 
 #completionMessage p {
     font-size: 20px;
+    font-weight: 700;
 }
 
 #completionMessage button, .link-button {
@@ -437,11 +446,17 @@ body {
     }
     .header {
         padding: 30px 10px 0;
+        height: auto;
     }
     .header h1 {
         font-size: 24px;
         line-height: 30px;
         max-width: 90%;
+        height: auto;
+    }
+    .description {
+        padding: 0 10px;
+        height: auto;
     }
     .description p {
         font-size: 14px;
@@ -449,14 +464,23 @@ body {
         max-width: 90%;
         height: auto;
     }
+    .settings-button-container {
+        padding: 10px;
+        height: auto;
+    }
     .settingsButton {
         max-width: 90%;
     }
+    .start-button-container {
+        padding: 10px;
+        height: auto;
+    }
     #startButton {
         max-width: 90vw;
-        height: auto;
-        aspect-ratio: 1 / 1;
+        height: 90vw;
+        max-height: 350px;
         border-width: 15px;
+        border-radius: 50%;
     }
     #startText {
         font-size: 24px;
@@ -468,5 +492,8 @@ body {
     .circle {
         width: min(70vw, 200px);
         height: min(70vw, 200px);
+    }
+    .text-section {
+        padding: 10px;
     }
 }
