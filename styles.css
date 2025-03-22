@@ -1,82 +1,79 @@
 body {
     background-color: #2C2C2C;
     color: #FFFFFF;
-    text-align: center;
     font-family: 'Inter', sans-serif;
     margin: 0;
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     overflow: hidden;
 }
 
 .container {
+    width: 100%;
+    max-width: 440px;
+    min-height: 100vh;
+    position: relative;
+    background: #2C2C2C;
+    overflow: hidden;
+}
+
+/* Общие стили для экранов */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    max-width: 440px; /* Ширина из макета */
-    min-height: 100vh;
-    padding: 0;
-    box-sizing: border-box;
-    position: relative;
-    background: #2C2C2C;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.container.initial-visible {
-    justify-content: center; /* Центрирование для начального экрана */
+.screen.active {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.container.breathing-visible {
-    justify-content: space-between;
-}
-
-/* Заголовок */
-.header {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 50px 20px 0;
+/* Экран 1: Начальный */
+.initial-screen {
+    justify-content: center;
     gap: 10px;
-    width: 440px;
-    height: 142px;
+}
+
+.header {
+    padding: 50px 20px 0;
+    width: 100%;
 }
 
 .header h1 {
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     height: 72px;
-    font-family: 'Inter', sans-serif;
-    font-style: normal;
     font-weight: 700;
     font-size: 30px;
     line-height: 36px;
-    display: flex;
-    align-items: center;
     color: #FFFFFF;
     margin: 0 auto;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Описание */
 .description {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
     padding: 0 20px;
-    gap: 10px;
-    width: 440px;
-    height: 200px;
+    width: 100%;
 }
 
 .description p {
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     height: 180px;
-    font-family: 'Inter', sans-serif;
-    font-style: normal;
     font-weight: 200;
     font-size: 15px;
     line-height: 18px;
@@ -85,78 +82,18 @@ body {
     text-align: left;
 }
 
-/* Текстовая секция (для подготовки) */
-.text-section {
-    width: 100%;
-    text-align: center;
-}
-
-#roundInfo {
-    font-size: clamp(12px, 3vw, 16px);
-    margin-bottom: 1vh;
-}
-
-#preparationText {
-    font-size: clamp(14px, 4vw, 18px);
-    margin: 2vh 0;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-#preparationTimer {
-    font-size: clamp(50px, 15vw, 100px);
-    color: #F5F5F5;
-    font-weight: bold;
-    margin: 2vh 0;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-.container.preparing #preparationText,
-.container.preparing #preparationTimer {
-    opacity: 1;
-}
-
-/* Начальный экран */
-.initialView {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    max-width: 440px;
-}
-
-.container.initial-visible .initialView {
-    display: flex;
-}
-
-/* Контейнер кнопки настроек */
 .settings-button-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
     padding: 20px;
-    gap: 10px;
-    width: 440px;
-    height: 100px;
+    width: 100%;
 }
 
 .settingsButton {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 6.16793px 74.0151px;
-    gap: 8.81px;
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     height: 60px;
     background: #777C78;
     border-radius: 17.6226px;
     border: none;
-    font-family: 'Inter', sans-serif;
-    font-style: normal;
     font-weight: 700;
     font-size: 20.266px;
     line-height: 25px;
@@ -170,37 +107,28 @@ body {
     transform: scale(1.02);
 }
 
-.settingsButton:active {
-    background-color: #4F5451;
-    transform: scale(0.98);
-}
-
-/* Круговая секция */
-.circle-section {
-    width: 100%;
-    max-width: 440px;
-    height: 484px;
-    padding: 20px;
+.start-button-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    position: relative;
+    padding: 20px;
+    width: 100%;
+    height: 484px;
+    flex-grow: 1;
 }
 
 #startButton {
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 134px 0;
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     height: 391px;
     background: rgba(40, 155, 226, 0.2);
     border: 17.6226px solid #289BE2;
     border-radius: 300px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: transform 0.3s ease;
 }
 
@@ -208,15 +136,9 @@ body {
     transform: scale(1.05);
 }
 
-#startButton:active {
-    transform: scale(0.98);
-}
-
 #startText {
-    width: 400px;
+    width: 100%;
     height: 32px;
-    font-family: 'Inter', sans-serif;
-    font-style: normal;
     font-weight: 700;
     font-size: 26.434px;
     line-height: 32px;
@@ -224,18 +146,53 @@ body {
     text-align: center;
 }
 
-/* Стили для breathingSection остаются без изменений */
-#breathingSection {
-    display: none;
+/* Экран 2: Подготовка */
+.preparation-screen {
+    justify-content: center;
+}
+
+.text-section {
     width: 100%;
-    flex-grow: 1;
-    flex-direction: column;
-    align-items: center;
+    text-align: center;
+}
+
+#roundInfo {
+    font-size: clamp(12px, 3vw, 16px);
+    margin-bottom: 1vh;
+}
+
+#preparationText {
+    font-size: clamp(14px, 4vw, 18px);
+    margin: 2vh 0;
+}
+
+#preparationTimer {
+    font-size: clamp(50px, 15vw, 100px);
+    font-weight: bold;
+}
+
+/* Экран 3: Практика */
+.breathing-screen {
     justify-content: space-between;
 }
 
-.container.breathing-visible #breathingSection {
+.circle-section {
+    width: 100%;
+    padding: 20px;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex-grow: 1;
+}
+
+#instruction {
+    font-size: clamp(14px, 4.5vw, 20px);
+    font-weight: bold;
+    color: #F5F5F5;
+    text-shadow: 0 0 5px rgba(245, 245, 245, 0.8);
+    position: absolute;
+    top: 20px;
 }
 
 .circle {
@@ -245,13 +202,11 @@ body {
     background-color: transparent;
     border: 3px solid #FFAB91;
     box-shadow: 0 0 20px rgba(255, 171, 145, 0.6);
-    transition: width 0.5s ease-in-out, height 0.5s ease-in-out, border-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out, opacity 0.5s ease;
+    transition: width 0.5s ease-in-out, height 0.5s ease-in-out, border-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    z-index: 1;
 }
 
 .circle.inhalation {
@@ -273,20 +228,6 @@ body {
     height: 100%;
 }
 
-#instruction {
-    font-size: clamp(14px, 4.5vw, 20px);
-    max-width: 100%;
-    overflow-wrap: break-word;
-    color: #F5F5F5;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(245, 245, 245, 0.8);
-    transition: opacity 0.5s ease;
-    opacity: 0;
-    margin-bottom: 1vh;
-    position: absolute;
-    top: 0;
-}
-
 .progress-bar {
     width: min(80%, 160px);
     height: clamp(8px, 2vw, 12px);
@@ -294,8 +235,6 @@ body {
     border-radius: 10px;
     display: none;
     position: relative;
-    margin: 0 auto;
-    z-index: 1;
 }
 
 .progress-bar-fill {
@@ -313,7 +252,6 @@ body {
     border-radius: 50%;
     border: 2px solid rgba(245, 245, 245, 0.7);
     opacity: 0;
-    z-index: 0;
 }
 
 .ripple.active {
@@ -330,52 +268,127 @@ body {
     display: none;
     margin-top: 1vh;
     color: #F5F5F5;
-    z-index: 2;
 }
 
 .controls-section {
     width: 100%;
     display: flex;
-    flex-direction: row;
-    align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
-    flex-shrink: 0;
-    margin-bottom: 1vh;
     gap: 1vw;
+    padding: 20px;
 }
 
 #pauseButton, #resetButton {
-    display: none;
     padding: 10px 20px;
     font-size: 18px;
     background-color: #289BE2;
     border-radius: 10px;
+    border: none;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+/* Экран 5: Завершение */
+.completion-screen {
+    justify-content: center;
 }
 
 #completionMessage {
-    display: none;
-    flex-grow: 1;
+    display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    margin: 1vh 0;
+    gap: 20px;
 }
 
-.link-button {
-    display: inline-block;
-    margin: 0.5vh 1vw;
-    background-color: #289BE2;
-    text-decoration: none;
-    padding: 7px 84px;
-    border-radius: 20px;
-    font-size: 23px;
+#completionMessage p {
+    font-size: 20px;
+}
+
+#completionMessage button, .link-button {
+    width: 100%;
+    max-width: 400px;
+    height: 60px;
+    background: #289BE2;
+    border-radius: 17.6226px;
+    border: none;
     font-weight: 700;
-    line-height: 28px;
+    font-size: 20.266px;
+    color: #FFFFFF;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .link-button:hover {
     background-color: #1E7BBF;
+}
+
+/* Настройки */
+.settings {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #000000;
+    padding: 2vh 0;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.5s ease;
+    z-index: 10;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.settings div {
+    margin: 3vh 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 10px;
+}
+
+.settings label {
+    font-size: clamp(24px, 6vw, 36px);
+}
+
+.settings input[type="range"] {
+    width: clamp(200px, 50vw, 300px);
+    height: 15px;
+    background: #4A5366;
+    border-radius: 10px;
+    -webkit-appearance: none;
+}
+
+.settings input[type="range"]::-webkit-slider-thumb {
+    width: 30px;
+    height: 30px;
+    background: #34C759;
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-appearance: none;
+}
+
+.settings span {
+    font-size: clamp(24px, 6vw, 36px);
+}
+
+.closeSettings {
+    position: absolute;
+    top: 1vh;
+    right: 1vw;
+    background: none;
+    border: none;
+    color: #F5F5F5;
+    font-size: clamp(12px, 3vw, 16px);
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
 }
 
 /* Модальное окно */
@@ -394,17 +407,10 @@ body {
 
 .modal-content {
     background-color: #2C2C2C;
-    padding: clamp(20px, 5vh, 30px);
+    padding: 20px;
     border-radius: 14px;
     text-align: center;
     width: min(80vw, 400px);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-.modal-content p {
-    font-size: clamp(16px, 4.5vw, 20px);
-    margin-bottom: 3vh;
-    color: #F5F5F5;
 }
 
 .modal-buttons {
@@ -415,164 +421,52 @@ body {
 
 .modal-buttons button {
     width: 40%;
-    padding: clamp(10px, 2vh, 15px);
+    padding: 10px;
     font-size: clamp(14px, 4vw, 18px);
 }
 
-#modalYes {
-    background-color: #34C759;
-}
+#modalYes { background-color: #34C759; }
+#modalYes:hover { background-color: #2DA44E; }
+#modalNo { background-color: #FF3B30; }
+#modalNo:hover { background-color: #D32F2F; }
 
-#modalYes:hover {
-    background-color: #2DA44E;
-}
-
-#modalNo {
-    background-color: #FF3B30;
-}
-
-#modalNo:hover {
-    background-color: #D32F2F;
-}
-
-/* Настройки */
-.settings {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #000000;
-    padding: 2vh 0;
-    box-sizing: border-box;
-    height: 0;
-    overflow: hidden;
-    transition: height 0.5s ease, padding 0.5s ease;
-    z-index: 10;
-    border-top-left-radius: 40px;
-    border-top-right-radius: 40px;
-}
-
-.settings[style*="height: 0"] {
-    padding: 0;
-}
-
-.container.initial-visible .settings {
-    display: flex;
-}
-
-.settings div {
-    margin: 3vh 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    padding: 0 10px;
-    box-sizing: border-box;
-}
-
-.settings label {
-    font-size: clamp(36px, 9vw, 48px);
-    margin-bottom: 0.5vh;
-}
-
-.settings input[type="range"] {
-    width: clamp(200px, 50vw, 300px);
-    height: 15px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: #4A5366;
-    border-radius: 10px;
-    outline: none;
-}
-
-.settings input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 30px;
-    height: 30px;
-    background: #34C759;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.settings span {
-    font-size: clamp(36px, 9vw, 48px);
-    margin-top: 0.5vh;
-}
-
-.closeSettings {
-    position: absolute;
-    top: 1vh;
-    right: 1vw;
-    background: none;
-    border: none;
-    color: #F5F5F5;
-    font-size: clamp(12px, 3vw, 16px);
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.closeSettings:hover {
-    color: #CCCCCC;
-}
-
-/* Медиа-запросы для адаптивности */
-@media (max-width: 440px) and (orientation: portrait) {
+/* Адаптивность */
+@media (max-width: 440px) {
     .container {
         max-width: 100%;
     }
     .header {
-        width: 100%;
         padding: 30px 10px 0;
     }
     .header h1 {
-        width: 100%;
         font-size: 24px;
         line-height: 30px;
-    }
-    .description {
-        width: 100%;
-        padding: 0 10px;
-        height: auto;
-    }
-    .description p {
-        width: 100%;
-        height: auto;
-        font-size: 14px;
-        line-height: 16px;
-    }
-    .settings-button-container {
-        width: 100%;
-        padding: 10px;
-    }
-    .settingsButton {
-        width: 100%;
         max-width: 90%;
     }
-    .circle-section {
-        width: 100%;
+    .description p {
+        font-size: 14px;
+        line-height: 16px;
+        max-width: 90%;
         height: auto;
-        padding: 10px;
+    }
+    .settingsButton {
+        max-width: 90%;
     }
     #startButton {
-        width: 90vw;
-        height: 90vw;
-        max-width: 350px;
-        max-height: 350px;
-        padding: 0;
+        max-width: 90vw;
+        height: auto;
+        aspect-ratio: 1 / 1;
         border-width: 15px;
-        border-radius: 50%;
     }
     #startText {
-        width: 100%;
         font-size: 24px;
         line-height: 28px;
+    }
+    .circle-section {
+        padding: 10px;
+    }
+    .circle {
+        width: min(70vw, 200px);
+        height: min(70vw, 200px);
     }
 }
