@@ -38,10 +38,14 @@ async function initAudio() {
         return await audioContext.decodeAudioData(arrayBuffer);
     };
 
-    startAudioBuffer = await loadAudio('start.MP3');
-    breathingAudioBuffer = await loadAudio('breathing.MP3');
-    delayAudioBuffer = await loadAudio('delay.MP3');
-    exhalationAudioBuffer = await loadAudio('exhalation.MP3');
+    try {
+        startAudioBuffer = await loadAudio('start.MP3');
+        breathingAudioBuffer = await loadAudio('breathing.MP3');
+        delayAudioBuffer = await loadAudio('delay.MP3');
+        exhalationAudioBuffer = await loadAudio('exhalation.MP3');
+    } catch (e) {
+        console.error('Ошибка загрузки аудио:', e);
+    }
 }
 
 function playAudio(buffer, loop = false) {
@@ -62,6 +66,16 @@ function stopAudio() {
 function switchScreen(screenId) {
     Object.values(screens).forEach(screen => screen.classList.remove('active'));
     screens[screenId].classList.add('active');
+}
+
+function showSoundModal() {
+    console.log('Кнопка "Начать" нажата'); // Отладка
+    const modal = document.getElementById('soundModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    } else {
+        console.error('Модальное окно не найдено');
+    }
 }
 
 function showSettings() {
