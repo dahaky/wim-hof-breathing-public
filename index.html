@@ -18,18 +18,18 @@
                 <p>Техника дыхания Вима Хофа включает циклы глубокого ритмичного дыхания и задержек на выдохе. Этот метод повышает уровень кислорода в крови, улучшает выносливость и снижает уровень стресса. Практика состоит из 30 быстрых вдохов и выдохов, после которых следует задержка дыхания на выдохе, затем глубокий вдох и новая задержка на 15 секунд. Регулярные тренировки помогают укрепить иммунитет, повысить концентрацию и адаптацию к холоду.</p>
             </div>
             <div class="settings-button-container">
-                <button class="settingsButton" onclick="showSettings()">Настройки</button>
+                <button class="settings-button" onclick="showSettings()">Настройки</button>
             </div>
             <div class="start-button-container">
-                <div class="circle" id="startButton" onclick="showSoundModal()">
-                    <div class="circle-content">
+                <div class="start-button" id="startButton" onclick="showSoundModal()">
+                    <div class="button-content">
                         <div id="startText">НАЧАТЬ</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Экран 2: Подготовка -->
+        <!-- Остальные экраны остаются без изменений -->
         <div class="screen preparation-screen" id="preparationScreen">
             <div class="text-section">
                 <div id="roundInfo"></div>
@@ -38,7 +38,6 @@
             </div>
         </div>
 
-        <!-- Экран 3: Практика и задержка -->
         <div class="screen breathing-screen" id="breathingScreen">
             <div class="circle-section">
                 <div id="instruction"></div>
@@ -58,7 +57,6 @@
             </div>
         </div>
 
-        <!-- Экран 4: Завершение -->
         <div class="screen completion-screen" id="completionScreen">
             <div id="completionMessage">
                 <p>Практика завершена, Вы молодец!</p>
@@ -67,7 +65,6 @@
             </div>
         </div>
 
-        <!-- Настройки -->
         <div class="settings" id="settings">
             <button class="closeSettings" onclick="closeSettings()">×</button>
             <div>
@@ -82,7 +79,6 @@
             </div>
         </div>
 
-        <!-- Модальное окно -->
         <div id="soundModal" class="modal">
             <div class="modal-content">
                 <p>Вы хотите использовать звук? <br>На iOS/Android убедитесь, что устройство не в режиме "Без звука".</p>
