@@ -3,24 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Дыхательная практика Вима Хоффа</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap">
+    <title>Дыхательная практика Вима Хофа</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;700&display=swap">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container initial-visible" id="container">
-        <h1>Дыхательная практика по методу Вима Хофа</h1>
+        <div class="header">
+            <h1>Дыхательная практика по методу Вима Хофа</h1>
+        </div>
+        <div class="description">
+            <p>Техника дыхания Вима Хофа включает циклы глубокого ритмичного дыхания и задержек на выдохе. Этот метод повышает уровень кислорода в крови, улучшает выносливость и снижает уровень стресса. Практика состоит из 30 быстрых вдохов и выдохов, после которых следует задержка дыхания на выдохе, затем глубокий вдох и новая задержка на 15 секунд. Регулярные тренировки помогают укрепить иммунитет, повысить концентрацию и адаптацию к холоду.</p>
+        </div>
         <div class="text-section">
             <div id="roundInfo"></div>
             <div id="preparationText">Готовимся к практике. Сядьте или лягте поудобнее и расслабьтесь</div>
             <div id="preparationTimer"></div>
         </div>
         <div class="initialView">
-            <button class="settingsButton" onclick="showSettings()">Настройки</button>
+            <div class="settings-button-container">
+                <button class="settingsButton" onclick="showSettings()">Настройки</button>
+            </div>
             <div class="circle-section">
                 <div class="circle" id="startButton" onclick="showSoundModal()">
                     <div class="circle-content">
-                        <div id="startText">Начать</div>
+                        <div id="startText">НАЧАТЬ</div>
                     </div>
                 </div>
             </div>
