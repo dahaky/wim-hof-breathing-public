@@ -60,9 +60,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Calculate circle circumference
+    let circumference = 0; // Инициализируем circumference в глобальной области
     if (elements.progressRing) {
         const radius = elements.progressRing.r.baseVal.value;
-        const circumference = radius * 2 * Math.PI;
+        circumference = radius * 2 * Math.PI;
         elements.progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
         elements.progressRing.style.strokeDashoffset = circumference;
         console.log("Progress ring initialized, circumference:", circumference);
@@ -73,6 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function setProgress(percent) {
         if (!elements.progressRing) {
             console.error("Cannot set progress: progressRing is null");
+            return;
+        }
+        if (!circumference) {
+            console.error("Cannot set progress: circumference is not defined");
             return;
         }
         const offset = circumference - (percent / 100 * circumference);
@@ -136,6 +141,15 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.holdTimeValue.textContent = elements.holdTimeInput.value;
         });
         console.log("Hold time input listener added");
+    }
+
+    // Функция для перезапуска анимации текста
+    function restartAnimation(element) {
+        if (element) {
+            element.style.animation = 'none';
+            element.offsetHeight; // Триггерим reflow для перезапуска анимации
+            element.style.animation = null;
+        }
     }
 
     // Navigation Functions
@@ -235,14 +249,20 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.phase.textContent = 'Get Ready';
         elements.round.textContent = `Round ${state.currentRound} of ${state.rounds}`;
         elements.counter.textContent = seconds;
+        restartAnimation(elements.phase);
+        restartAnimation(elements.round);
+        restartAnimation(elements.counter);
+        console.log("Starting countdown for", seconds, "seconds");
         await Promise.all([
             animateProgress(seconds * 1000, true, false),
             updateCounterDuringHold(seconds)
         ]);
         setProgress(0);
+        console.log("Countdown finished");
     }
 
     async function animateProgress(duration, isIncreasing = true, pauseAtEnds = true) {
+        console.log("Starting animateProgress for", duration, "ms");
         return new Promise(resolve => {
             const startTime = performance.now();
             const endTime = startTime + duration;
@@ -276,13 +296,17 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error("Counter element not found!");
             return;
         }
+        console.log("Starting updateCounterDuringHold for", duration, "seconds");
         for (let i = duration; i > 0; i--) {
             if (!state.isHolding && duration !== 5) { // Прерываем, если задержка прервана (кроме Get Ready)
+                console.log("Counter interrupted due to hold break");
                 break;
             }
             elements.counter.textContent = i;
+            restartAnimation(elements.counter);
             await sleep(1000);
         }
+        console.log("updateCounterDuringHold finished");
     }
 
     async function startRound() {
@@ -290,6 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
         await countdown(5);
         
         state.breathCount = 0;
+        console.log("Starting breathing phase");
         
         // 30 breaths
         for (let i = 0; i < 30; i++) {
@@ -299,6 +324,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (elements.phase && elements.counter) {
                 elements.phase.textContent = 'Inhale';
                 elements.counter.textContent = state.breathCount;
+                restartAnimation(elements.phase);
+                restartAnimation(elements.counter);
             }
             if (i === 29) {
                 await animateProgress(3000, true, true); // Глубокий вдох
@@ -309,6 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Exhale
             if (elements.phase) {
                 elements.phase.textContent = 'Exhale';
+                restartAnimation(elements.phase);
             }
             if (i === 29) {
                 await animateProgress(3000, false, true); // Глубокий выдох
@@ -322,6 +350,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (elements.phase && elements.counter) {
             elements.phase.textContent = 'Hold';
             elements.counter.textContent = holdTime;
+            restartAnimation(elements.phase);
+            restartAnimation(elements.counter);
         }
 
         state.isHolding = true; // Устанавливаем флаг задержки дыхания
@@ -332,16 +362,19 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             if (state.isHolding) {
                 showBreatheInButton();
+                console.log("Breathe in button shown");
             }
         }, showButtonDelay);
 
         setTimeout(() => {
             if (state.isHolding) {
                 hideBreatheInButton();
+                console.log("Breathe in button hidden");
             }
         }, hideButtonDelay);
 
         // Запускаем анимацию и отсчет параллельно
+        console.log("Starting first retention for", holdTime, "seconds");
         await Promise.all([
             animateProgress(holdTime * 1000, true, false),
             updateCounterDuringHold(holdTime)
@@ -360,6 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Recovery breath
         if (elements.phase) {
             elements.phase.textContent = 'Deep Inhale';
+            restartAnimation(elements.phase);
         }
         await animateProgress(3000, true, true);
 
@@ -367,6 +401,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (elements.phase && elements.counter) {
             elements.phase.textContent = 'Hold';
             elements.counter.textContent = 15;
+            restartAnimation(elements.phase);
+            restartAnimation(elements.counter);
         }
         await Promise.all([
             animateProgress(15 * 1000, true, false),
@@ -376,6 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Final exhale
         if (elements.phase) {
             elements.phase.textContent = 'Deep Exhale';
+            restartAnimation(elements.phase);
         }
         await animateProgress(3000, false, true);
 
