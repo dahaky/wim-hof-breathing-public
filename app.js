@@ -157,27 +157,33 @@ document.addEventListener('DOMContentLoaded', function() {
         
         state.breathCount = 0;
         
+        // 30 breaths
         for (let i = 0; i < 30; i++) {
             state.breathCount++;
             
+            // Inhale
             elements.phase.textContent = 'Inhale';
             elements.counter.textContent = state.breathCount;
-            setProgress((state.breathCount / 30) * 100);
             
+            // Анимация заполнения шкалы при вдохе
             if (i === 29) {
-                await sleep(3000);
+                await animateProgress(3000, true); // Глубокий вдох
             } else {
-                await sleep(1500);
+                await animateProgress(1500, true); // Обычный вдох
             }
             
+            // Exhale
             elements.phase.textContent = 'Exhale';
+            
+            // Анимация уменьшения шкалы при выдохе
             if (i === 29) {
-                await sleep(3000);
+                await animateProgress(3000, false); // Глубокий выдох
             } else {
-                await sleep(1500);
+                await animateProgress(1500, false); // Обычный выдох
             }
         }
 
+        // First retention
         const holdTime = getCurrentHoldTime();
         elements.phase.textContent = 'Hold';
         for (let i = holdTime; i > 0; i--) {
@@ -186,9 +192,11 @@ document.addEventListener('DOMContentLoaded', function() {
             await sleep(1000);
         }
 
+        // Recovery breath
         elements.phase.textContent = 'Deep Inhale';
-        await animateProgress(3000);
+        await animateProgress(3000, true);
 
+        // Second retention
         elements.phase.textContent = 'Hold';
         for (let i = 15; i > 0; i--) {
             elements.counter.textContent = i;
@@ -196,9 +204,11 @@ document.addEventListener('DOMContentLoaded', function() {
             await sleep(1000);
         }
 
+        // Final exhale
         elements.phase.textContent = 'Deep Exhale';
         await animateProgress(3000, false);
 
+        // Check if more rounds
         if (state.currentRound < state.rounds) {
             state.currentRound++;
             await sleep(2000);
@@ -208,6 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Utility Functions
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
