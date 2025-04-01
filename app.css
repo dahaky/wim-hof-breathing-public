@@ -48,7 +48,7 @@ body {
     width: 100%;
     height: 100%;
     flex: 1;
-    position: relative; /* Для позиционирования кнопки Breathe in */
+    position: relative;
 }
 
 .screen.active {
@@ -284,7 +284,8 @@ h1 {
 /* Стили для кнопки Breathe in */
 .breathe-in-button {
     position: absolute;
-    bottom: clamp(20px, 5vmin, 30px);
+    top: calc(50% + var(--circle-size) / 2 + 30px); /* 30px ниже круга */
+    transform: translateY(-50%);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.5s ease, visibility 0s ease 0.5s;
