@@ -5,7 +5,7 @@
     --tg-theme-button-text-color: #ffffff;
     --primary-color: #2481cc;
     --secondary-color: #f1f1f1;
-    --circle-size: min(280px, 80vw);
+    --circle-size: min(280px, 80vmin); /* Используем vmin для адаптации */
     --progress-width: 8px;
 }
 
@@ -21,20 +21,33 @@ body {
     background-color: var(--tg-theme-bg-color);
     color: var(--tg-theme-text-color);
     line-height: 1.5;
-    overflow-x: hidden;
+    overflow: hidden; /* Запрещаем прокрутку */
+    height: 100vh; /* Фиксируем высоту на весь экран */
+    width: 100vw; /* Фиксируем ширину на весь экран */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .container {
-    max-width: min(600px, 100%);
-    margin: 0 auto;
-    padding: clamp(16px, 5vw, 20px);
-    min-height: 100vh;
+    max-width: min(600px, 100vw); /* Адаптируем под ширину экрана */
+    max-height: 100vh; /* Ограничиваем высоту */
+    padding: clamp(16px, 5vmin, 20px); /* Адаптивный padding */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Запрещаем прокрутку внутри контейнера */
 }
 
 .screen {
     display: none;
     opacity: 0;
     transition: opacity 0.5s ease;
+    width: 100%;
+    height: 100%;
+    flex: 1;
 }
 
 .screen.active {
@@ -43,21 +56,20 @@ body {
     align-items: center;
     justify-content: center;
     opacity: 1;
-    min-height: 100vh;
     text-align: center;
 }
 
 h1 {
-    font-size: clamp(24px, 5vw, 28px);
-    margin-bottom: clamp(16px, 4vw, 20px);
+    font-size: clamp(24px, 5vmin, 28px); /* Адаптивный размер шрифта */
+    margin-bottom: clamp(16px, 4vmin, 20px);
     font-weight: 700;
 }
 
 .description {
-    font-size: clamp(14px, 4vw, 16px);
-    margin-bottom: clamp(32px, 8vw, 40px);
+    font-size: clamp(14px, 4vmin, 16px);
+    margin-bottom: clamp(32px, 8vmin, 40px);
     color: rgba(0, 0, 0, 0.7);
-    padding: 0 clamp(16px, 4vw, 20px);
+    padding: 0 clamp(16px, 4vmin, 20px);
 }
 
 .primary-button {
@@ -65,15 +77,15 @@ h1 {
     color: var(--tg-theme-button-text-color);
     border: none;
     border-radius: 50px;
-    padding: clamp(14px, 4vw, 16px) clamp(28px, 6vw, 32px);
-    font-size: clamp(16px, 4vw, 18px);
+    padding: clamp(14px, 4vmin, 16px) clamp(28px, 6vmin, 32px);
+    font-size: clamp(16px, 4vmin, 18px);
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
                 opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                 background-color 0.3s ease;
-    margin: clamp(8px, 2vw, 10px) 0;
-    min-width: clamp(180px, 50vw, 200px);
+    margin: clamp(8px, 2vmin, 10px) 0;
+    min-width: clamp(180px, 50vmin, 200px);
     position: relative;
     overflow: hidden;
 }
@@ -104,10 +116,10 @@ h1 {
     background-color: transparent;
     color: var(--tg-theme-button-color);
     border: none;
-    padding: clamp(10px, 3vw, 12px) clamp(20px, 5vw, 24px);
-    font-size: clamp(14px, 4vw, 16px);
+    padding: clamp(10px, 3vmin, 12px) clamp(20px, 5vmin, 24px);
+    font-size: clamp(14px, 4vmin, 16px);
     cursor: pointer;
-    margin-top: clamp(8px, 2vw, 10px);
+    margin-top: clamp(8px, 2vmin, 10px);
     transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
@@ -123,7 +135,7 @@ h1 {
     right: 0;
     background-color: var(--tg-theme-bg-color);
     border-radius: 20px 20px 0 0;
-    padding: clamp(20px, 5vw, 24px);
+    padding: clamp(20px, 5vmin, 24px);
     box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.1);
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
@@ -135,22 +147,22 @@ h1 {
 }
 
 .setting-item {
-    margin: clamp(16px, 4vw, 20px) 0;
+    margin: clamp(16px, 4vmin, 20px) 0;
     text-align: left;
 }
 
 .setting-item label {
     display: block;
-    margin-bottom: clamp(6px, 2vw, 8px);
+    margin-bottom: clamp(6px, 2vmin, 8px);
     font-weight: 500;
 }
 
 .setting-item input {
     width: 100%;
-    padding: clamp(10px, 3vw, 12px);
+    padding: clamp(10px, 3vmin, 12px);
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    font-size: clamp(14px, 4vw, 16px);
+    font-size: clamp(14px, 4vmin, 16px);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -200,19 +212,19 @@ h1 {
 }
 
 .phase-text {
-    font-size: clamp(20px, 5vw, 24px);
+    font-size: clamp(20px, 5vmin, 24px);
     font-weight: 600;
-    margin-bottom: clamp(8px, 2vw, 10px);
+    margin-bottom: clamp(8px, 2vmin, 10px);
 }
 
 .round-text {
-    font-size: clamp(14px, 4vw, 16px);
+    font-size: clamp(14px, 4vmin, 16px);
     color: var(--primary-color);
-    margin-bottom: clamp(8px, 2vw, 10px);
+    margin-bottom: clamp(8px, 2vmin, 10px);
 }
 
 .counter {
-    font-size: clamp(36px, 10vw, 48px);
+    font-size: clamp(36px, 10vmin, 48px);
     font-weight: 700;
     color: var(--primary-color);
 }
