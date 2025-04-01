@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Hiding settings modal");
         elements.settingsModal.classList.remove('active');
         elements.modalOverlay.classList.remove('active');
-        document.body.style.overflow = '';
+        document.body.style.overflow = 'hidden'; // Оставляем overflow: hidden
     }
 
     function saveSettings() {
@@ -156,7 +156,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (progressFraction < 1) {
                     requestAnimationFrame(animate);
                 } else {
-                    // Анимация завершена, добавляем паузу
                     if (pauseAtEnds) {
                         setTimeout(resolve, 500); // Пауза 0.5 секунды
                     } else {
@@ -167,6 +166,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             requestAnimationFrame(animate);
         });
+    }
+
+    // Новая функция для обновления счетчика секунд во время задержки дыхания
+    async function updateCounterDuringHold(duration) {
+        for (let i = duration; i > 0; i--) {
+            elements.counter.textContent = i;
+            await sleep(1000);
+        }
     }
 
     async function startRound() {
@@ -182,8 +189,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Inhale
             elements.phase.textContent = 'Inhale';
             elements.counter.textContent = state.breathCount;
-            
-            // Анимация заполнения шкалы при вдохе с паузой на 100%
             if (i === 29) {
                 await animateProgress(3000, true, true); // Глубокий вдох
             } else {
@@ -192,8 +197,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Exhale
             elements.phase.textContent = 'Exhale';
-            
-            // Анимация уменьшения шкалы при выдохе с паузой на 0%
             if (i === 29) {
                 await animateProgress(3000, false, true); // Глубокий выдох
             } else {
@@ -201,26 +204,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // First retention
+        // First retention (основная задержка дыхания)
         const holdTime = getCurrentHoldTime();
         elements.phase.textContent = 'Hold';
-        for (let i = holdTime; i > 0; i--) {
-            elements.counter.textContent = i;
-            setProgress((holdTime - i) / holdTime * 100);
-            await sleep(1000);
-        }
+        elements.counter.textContent = holdTime;
+        // Запускаем анимацию и обновление счетчика параллельно
+        await Promise.all([
+            animateProgress(holdTime * 1000, true, false), // Плавная анимация без паузы
+            updateCounterDuringHold(holdTime)
+        ]);
 
         // Recovery breath
         elements.phase.textContent = 'Deep Inhale';
         await animateProgress(3000, true, true);
 
-        // Second retention
+        // Second retention (задержка на 15 секунд)
         elements.phase.textContent = 'Hold';
-        for (let i = 15; i > 0; i--) {
-            elements.counter.textContent = i;
-            setProgress((15 - i) / 15 * 100);
-            await sleep(1000);
-        }
+        elements.counter.textContent = 15;
+        // Запускаем анимацию и обновление счетчика параллельно
+        await Promise.all([
+            animateProgress(15 * 1000, true, false), // Плавная анимация без паузы
+            updateCounterDuringHold(15)
+        ]);
 
         // Final exhale
         elements.phase.textContent = 'Deep Exhale';
