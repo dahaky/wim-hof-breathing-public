@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
         currentRound: 1,
         breathCount: 0,
         isBreathing: false,
-        isHolding: false // Флаг для отслеживания задержки дыхания
+        isHolding: false, // Флаг для отслеживания задержки дыхания
+        shouldStopAnimation: false // Флаг для прерывания анимации
     };
 
     // DOM Elements
@@ -124,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.breatheInButton.addEventListener('click', () => {
             console.log("Breathe in button clicked");
             state.isHolding = false; // Прерываем задержку дыхания
+            state.shouldStopAnimation = true; // Прерываем анимацию прогресса
             hideBreatheInButton();
         });
         console.log("Breathe in button listener added");
@@ -254,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         restartAnimation(elements.counter);
         console.log("Starting countdown for", seconds, "seconds");
         await Promise.all([
-            animateProgress(seconds * 1000, true, false),
+            animateProgress(seconds * 1000, false, false), // Убываем (как при выдохе)
             updateCounterDuringHold(seconds)
         ]);
         setProgress(0);
@@ -264,10 +266,17 @@ document.addEventListener('DOMContentLoaded', function() {
     async function animateProgress(duration, isIncreasing = true, pauseAtEnds = true) {
         console.log("Starting animateProgress for", duration, "ms");
         return new Promise(resolve => {
+            state.shouldStopAnimation = false; // Сбрасываем флаг перед началом анимации
             const startTime = performance.now();
             const endTime = startTime + duration;
 
             function animate(currentTime) {
+                if (state.shouldStopAnimation) {
+                    console.log("Animation stopped");
+                    resolve();
+                    return;
+                }
+
                 const elapsed = currentTime - startTime;
                 const progressFraction = Math.min(elapsed / duration, 1);
                 const progress = isIncreasing
@@ -385,10 +394,9 @@ document.addEventListener('DOMContentLoaded', function() {
             hideBreatheInButton();
         }
 
-        // Если задержка была прервана, сразу переходим к следующему этапу
-        if (!state.isHolding) {
-            state.isHolding = false; // Сбрасываем флаг
-        }
+        // Сбрасываем флаг
+        state.isHolding = false;
+        state.shouldStopAnimation = false;
 
         // Recovery breath
         if (elements.phase) {
