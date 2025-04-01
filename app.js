@@ -139,16 +139,34 @@ document.addEventListener('DOMContentLoaded', function() {
         setProgress(0);
     }
 
-    async function animateProgress(duration, isIncreasing = true) {
-        const fps = 60;
-        const frames = duration * fps / 1000;
-        const increment = 100 / frames;
-        
-        for (let i = 0; i < frames; i++) {
-            const progress = isIncreasing ? i * increment : 100 - (i * increment);
-            setProgress(progress);
-            await sleep(1000 / fps);
-        }
+    async function animateProgress(duration, isIncreasing = true, pauseAtEnds = true) {
+        return new Promise(resolve => {
+            const startTime = performance.now();
+            const endTime = startTime + duration;
+
+            function animate(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progressFraction = Math.min(elapsed / duration, 1);
+                const progress = isIncreasing
+                    ? progressFraction * 100
+                    : (1 - progressFraction) * 100;
+
+                setProgress(progress);
+
+                if (progressFraction < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Анимация завершена, добавляем паузу
+                    if (pauseAtEnds) {
+                        setTimeout(resolve, 500); // Пауза 0.5 секунды
+                    } else {
+                        resolve();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        });
     }
 
     async function startRound() {
@@ -165,21 +183,21 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.phase.textContent = 'Inhale';
             elements.counter.textContent = state.breathCount;
             
-            // Анимация заполнения шкалы при вдохе
+            // Анимация заполнения шкалы при вдохе с паузой на 100%
             if (i === 29) {
-                await animateProgress(3000, true); // Глубокий вдох
+                await animateProgress(3000, true, true); // Глубокий вдох
             } else {
-                await animateProgress(1500, true); // Обычный вдох
+                await animateProgress(1500, true, true); // Обычный вдох
             }
             
             // Exhale
             elements.phase.textContent = 'Exhale';
             
-            // Анимация уменьшения шкалы при выдохе
+            // Анимация уменьшения шкалы при выдохе с паузой на 0%
             if (i === 29) {
-                await animateProgress(3000, false); // Глубокий выдох
+                await animateProgress(3000, false, true); // Глубокий выдох
             } else {
-                await animateProgress(1500, false); // Обычный выдох
+                await animateProgress(1500, false, true); // Обычный выдох
             }
         }
 
@@ -194,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Recovery breath
         elements.phase.textContent = 'Deep Inhale';
-        await animateProgress(3000, true);
+        await animateProgress(3000, true, true);
 
         // Second retention
         elements.phase.textContent = 'Hold';
@@ -206,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Final exhale
         elements.phase.textContent = 'Deep Exhale';
-        await animateProgress(3000, false);
+        await animateProgress(3000, false, true);
 
         // Check if more rounds
         if (state.currentRound < state.rounds) {
