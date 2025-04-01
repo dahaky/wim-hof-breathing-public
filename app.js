@@ -1,9 +1,14 @@
-// Initialize Telegram WebApp
-const tg = window.Telegram.WebApp;
+// Mock Telegram WebApp for testing outside Telegram
+const tg = window.Telegram?.WebApp || {
+    expand: () => console.log("Mock Telegram WebApp expand called"),
+    ready: () => console.log("Mock Telegram WebApp ready called")
+};
 tg.expand();
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM fully loaded, initializing app...");
+
     // App State
     let state = {
         rounds: 3,
@@ -47,11 +52,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Event Listeners
-    elements.startButton?.addEventListener('click', startExercise);
-    elements.settingsButton?.addEventListener('click', showSettings);
-    elements.saveSettings?.addEventListener('click', saveSettings);
-    elements.restartButton?.addEventListener('click', resetAndShowHome);
-    elements.modalOverlay?.addEventListener('click', hideSettings);
+    elements.startButton?.addEventListener('click', () => {
+        console.log("Start button clicked");
+        startExercise();
+    });
+    elements.settingsButton?.addEventListener('click', () => {
+        console.log("Settings button clicked");
+        showSettings();
+    });
+    elements.saveSettings?.addEventListener('click', () => {
+        console.log("Save settings button clicked");
+        saveSettings();
+    });
+    elements.restartButton?.addEventListener('click', () => {
+        console.log("Restart button clicked");
+        resetAndShowHome();
+    });
+    elements.modalOverlay?.addEventListener('click', () => {
+        console.log("Modal overlay clicked");
+        hideSettings();
+    });
 
     // Navigation Functions
     function showScreen(screenId) {
@@ -66,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showSettings() {
+        console.log("Showing settings modal");
         elements.roundsInput.value = state.rounds;
         elements.holdTimeInput.value = state.initialHoldTime;
         elements.settingsModal.classList.add('active');
@@ -74,18 +95,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function hideSettings() {
+        console.log("Hiding settings modal");
         elements.settingsModal.classList.remove('active');
         elements.modalOverlay.classList.remove('active');
         document.body.style.overflow = '';
     }
 
     function saveSettings() {
+        console.log("Saving settings");
         state.rounds = parseInt(elements.roundsInput.value) || 3;
         state.initialHoldTime = parseInt(elements.holdTimeInput.value) || 90;
         hideSettings();
     }
 
     function resetAndShowHome() {
+        console.log("Resetting and showing home screen");
         state.currentRound = 1;
         state.breathCount = 0;
         state.isBreathing = false;
@@ -95,6 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Breathing Exercise Functions
     async function startExercise() {
+        console.log("Starting exercise");
         showScreen('exercise');
         await startRound();
     }
@@ -127,28 +152,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function startRound() {
-        // Preparation countdown
+        console.log("Starting round", state.currentRound);
         await countdown(5);
         
         state.breathCount = 0;
         
-        // 30 breaths
         for (let i = 0; i < 30; i++) {
             state.breathCount++;
             
-            // Inhale
             elements.phase.textContent = 'Inhale';
             elements.counter.textContent = state.breathCount;
             setProgress((state.breathCount / 30) * 100);
             
-            // Last breath is deeper
             if (i === 29) {
                 await sleep(3000);
             } else {
                 await sleep(1500);
             }
             
-            // Exhale
             elements.phase.textContent = 'Exhale';
             if (i === 29) {
                 await sleep(3000);
@@ -157,7 +178,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // First retention
         const holdTime = getCurrentHoldTime();
         elements.phase.textContent = 'Hold';
         for (let i = holdTime; i > 0; i--) {
@@ -166,11 +186,9 @@ document.addEventListener('DOMContentLoaded', function() {
             await sleep(1000);
         }
 
-        // Recovery breath
         elements.phase.textContent = 'Deep Inhale';
         await animateProgress(3000);
 
-        // Second retention
         elements.phase.textContent = 'Hold';
         for (let i = 15; i > 0; i--) {
             elements.counter.textContent = i;
@@ -178,11 +196,9 @@ document.addEventListener('DOMContentLoaded', function() {
             await sleep(1000);
         }
 
-        // Final exhale
         elements.phase.textContent = 'Deep Exhale';
         await animateProgress(3000, false);
 
-        // Check if more rounds
         if (state.currentRound < state.rounds) {
             state.currentRound++;
             await sleep(2000);
@@ -192,7 +208,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Utility Functions
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
