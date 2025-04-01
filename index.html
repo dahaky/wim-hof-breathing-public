@@ -1,95 +1,63 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Дыхательная практика Вима Хофа</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;700&display=swap">
-    <link rel="stylesheet" href="styles.css">
+    <title>Wim Hof Breathing</title>
+    <link rel="stylesheet" href="app.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div class="container" id="container">
-        <!-- Экран 1: Начальный -->
-        <div class="screen initial-screen active" id="initialScreen">
-            <div class="header">
-                <h1>Дыхательная практика по методу Вима Хофа</h1>
-            </div>
-            <div class="description">
-                <p>Техника дыхания Вима Хофа включает циклы глубокого ритмичного дыхания и задержек на выдохе. Этот метод повышает уровень кислорода в крови, улучшает выносливость и снижает уровень стресса. Практика состоит из 30 быстрых вдохов и выдохов, после которых следует задержка дыхания на выдохе, затем глубокий вдох и новая задержка на 15 секунд. Регулярные тренировки помогают укрепить иммунитет, повысить концентрацию и адаптацию к холоду.</p>
-            </div>
-            <div class="settings-button-container">
-                <button class="settings-button" onclick="showSettings()">Настройки</button>
-            </div>
-            <div class="start-button-container">
-                <div class="start-button" id="startButton" onclick="showSoundModal()">
-                    <div class="button-content">
-                        <div id="startText">НАЧАТЬ</div>
-                    </div>
+    <div class="container">
+        <!-- Home Screen -->
+        <div id="homeScreen" class="screen active">
+            <h1>Wim Hof Breathing</h1>
+            <p class="description">
+                Experience the power of controlled breathing through the Wim Hof Method. 
+                This practice combines deep breathing with breath retention to enhance 
+                your physical and mental well-being.
+            </p>
+            <button id="startButton" class="primary-button">Start</button>
+            <button id="settingsButton" class="secondary-button">Settings</button>
+        </div>
+
+        <!-- Exercise Screen -->
+        <div id="exerciseScreen" class="screen">
+            <div class="breathing-circle">
+                <svg class="progress-ring">
+                    <circle class="progress-ring__background" r="136" cx="140" cy="140"/>
+                    <circle class="progress-ring__circle" r="136" cx="140" cy="140"/>
+                </svg>
+                <div class="circle-content">
+                    <div id="round" class="round-text">Round 1 of 3</div>
+                    <div id="phase" class="phase-text">Get Ready</div>
+                    <div id="counter" class="counter">5</div>
                 </div>
             </div>
         </div>
 
-        <!-- Остальные экраны остаются без изменений -->
-        <div class="screen preparation-screen" id="preparationScreen">
-            <div class="text-section">
-                <div id="roundInfo"></div>
-                <div id="preparationText">Готовимся к практике. Сядьте или лягте поудобнее и расслабьтесь</div>
-                <div id="preparationTimer"></div>
-            </div>
+        <!-- Completion Screen -->
+        <div id="completionScreen" class="screen">
+            <h2>Practice Complete!</h2>
+            <p>Great job! You've completed all rounds.</p>
+            <button id="restartButton" class="primary-button">Do it Again</button>
         </div>
 
-        <div class="screen breathing-screen" id="breathingScreen">
-            <div class="circle-section">
-                <div id="instruction"></div>
-                <div class="circle" id="circle">
-                    <div class="circle-content">
-                        <div class="progress-bar" id="progressBarContainer">
-                            <div class="progress-bar-fill" id="progressBar"></div>
-                        </div>
-                        <div id="timerInsideCircle"></div>
-                    </div>
-                    <div class="ripple" id="rippleEffect"></div>
-                </div>
+        <!-- Settings Modal -->
+        <div class="modal-overlay"></div>
+        <div class="settings-modal">
+            <h2>Settings</h2>
+            <div class="setting-item">
+                <label for="rounds">Number of Rounds</label>
+                <input type="number" id="rounds" min="1" max="10" value="3">
             </div>
-            <div class="controls-section">
-                <button onclick="pauseSession()" id="pauseButton">Пауза</button>
-                <button onclick="resetSession()" id="resetButton">Сброс</button>
+            <div class="setting-item">
+                <label for="holdTime">Initial Hold Time (seconds)</label>
+                <input type="number" id="holdTime" min="30" max="180" value="90">
             </div>
-        </div>
-
-        <div class="screen completion-screen" id="completionScreen">
-            <div id="completionMessage">
-                <p>Практика завершена, Вы молодец!</p>
-                <button onclick="resetSession()">Ещё раз</button>
-                <a href="https://plainly.ru/30-luchshikh-besplatnykh-ii-servisov" target="_blank" class="link-button">Посмотри, это интересно</a>
-            </div>
-        </div>
-
-        <div class="settings" id="settings">
-            <button class="closeSettings" onclick="closeSettings()">×</button>
-            <div>
-                <label>Начальная задержка дыхания (сек):</label>
-                <input type="range" id="initialBreathHoldTime" min="10" max="120" value="60">
-                <span id="initialBreathHoldTimeValue">60</span>
-            </div>
-            <div>
-                <label>Количество раундов:</label>
-                <input type="range" id="numberOfRounds" min="1" max="10" value="3">
-                <span id="numberOfRoundsValue">3</span>
-            </div>
-        </div>
-
-        <div id="soundModal" class="modal">
-            <div class="modal-content">
-                <p>Вы хотите использовать звук? <br>На iOS/Android убедитесь, что устройство не в режиме "Без звука".</p>
-                <div class="modal-buttons">
-                    <button id="modalYes" onclick="startSession(true)">Да</button>
-                    <button id="modalNo" onclick="startSession(false)">Нет</button>
-                </div>
-            </div>
+            <button id="saveSettings" class="primary-button">Save</button>
         </div>
     </div>
-
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
