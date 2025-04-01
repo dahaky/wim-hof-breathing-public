@@ -49,12 +49,12 @@
         <div class="settings-modal">
             <h2>Settings</h2>
             <div class="setting-item">
-                <label for="rounds">Number of Rounds</label>
-                <input type="number" id="rounds" min="1" max="10" value="3">
+                <label for="rounds">Number of Rounds: <span id="roundsValue">3</span></label>
+                <input type="range" id="rounds" min="1" max="10" value="3">
             </div>
             <div class="setting-item">
-                <label for="holdTime">Initial Hold Time (seconds)</label>
-                <input type="number" id="holdTime" min="30" max="180" value="90">
+                <label for="holdTime">Initial Hold Time (seconds): <span id="holdTimeValue">90</span></label>
+                <input type="range" id="holdTime" min="10" max="120" value="90">
             </div>
             <button id="saveSettings" class="primary-button">Save</button>
         </div>
