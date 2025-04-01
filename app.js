@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Navigation Functions
     function showScreen(screenId) {
-        Object valoriues(screens).forEach(screen => {
+        Object.values(screens).forEach(screen => { // Исправлено: valoriues → values
             if (screen) {
                 screen.classList.remove('active');
             }
