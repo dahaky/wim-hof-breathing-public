@@ -5,7 +5,7 @@
     --tg-theme-button-text-color: #ffffff;
     --primary-color: #2481cc;
     --secondary-color: #f1f1f1;
-    --circle-size: min(280px, 80vmin); /* Используем vmin для адаптации */
+    --circle-size: min(280px, 80vmin);
     --progress-width: 8px;
 }
 
@@ -21,9 +21,9 @@ body {
     background-color: var(--tg-theme-bg-color);
     color: var(--tg-theme-text-color);
     line-height: 1.5;
-    overflow: hidden; /* Запрещаем прокрутку */
-    height: 100vh; /* Фиксируем высоту на весь экран */
-    width: 100vw; /* Фиксируем ширину на весь экран */
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
     margin: 0;
     display: flex;
     justify-content: center;
@@ -31,14 +31,14 @@ body {
 }
 
 .container {
-    max-width: min(600px, 100vw); /* Адаптируем под ширину экрана */
-    max-height: 100vh; /* Ограничиваем высоту */
-    padding: clamp(16px, 5vmin, 20px); /* Адаптивный padding */
+    max-width: min(600px, 100vw);
+    max-height: 100vh;
+    padding: clamp(16px, 5vmin, 20px);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Запрещаем прокрутку внутри контейнера */
+    overflow: hidden;
 }
 
 .screen {
@@ -60,7 +60,7 @@ body {
 }
 
 h1 {
-    font-size: clamp(24px, 5vmin, 28px); /* Адаптивный размер шрифта */
+    font-size: clamp(24px, 5vmin, 28px);
     margin-bottom: clamp(16px, 4vmin, 20px);
     font-weight: 700;
 }
@@ -152,24 +152,54 @@ h1 {
 }
 
 .setting-item label {
-    display: block;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: clamp(6px, 2vmin, 8px);
     font-weight: 500;
-}
-
-.setting-item input {
-    width: 100%;
-    padding: clamp(10px, 3vmin, 12px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
     font-size: clamp(14px, 4vmin, 16px);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.setting-item input:focus {
+.setting-item input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: clamp(8px, 2vmin, 10px);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(36, 129, 204, 0.1);
+    transition: background 0.3s ease;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: clamp(20px, 5vmin, 24px);
+    height: clamp(20px, 5vmin, 24px);
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.setting-item input[type="range"]::-moz-range-thumb {
+    width: clamp(20px, 5vmin, 24px);
+    height: clamp(20px, 5vmin, 24px);
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.setting-item input[type="range"]:hover::-webkit-slider-thumb,
+.setting-item input[type="range"]:hover::-moz-range-thumb {
+    transform: scale(1.1);
+}
+
+.setting-item input[type="range"]:focus {
+    background: rgba(36, 129, 204, 0.2);
 }
 
 .breathing-circle {
@@ -256,10 +286,6 @@ h1 {
 
     .secondary-button:hover {
         opacity: 0.8;
-    }
-
-    .setting-item input:hover {
-        border-color: rgba(36, 129, 204, 0.5);
     }
 }
 
