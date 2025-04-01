@@ -32,6 +32,8 @@ document.addEventListener('DOMContentLoaded', function() {
         restartButton: document.getElementById('restartButton'),
         roundsInput: document.getElementById('rounds'),
         holdTimeInput: document.getElementById('holdTime'),
+        roundsValue: document.getElementById('roundsValue'),
+        holdTimeValue: document.getElementById('holdTimeValue'),
         progressRing: document.querySelector('.progress-ring__circle'),
         phase: document.getElementById('phase'),
         round: document.getElementById('round'),
@@ -73,9 +75,17 @@ document.addEventListener('DOMContentLoaded', function() {
         hideSettings();
     });
 
+    // Обновление значений ползунков в реальном времени
+    elements.roundsInput?.addEventListener('input', () => {
+        elements.roundsValue.textContent = elements.roundsInput.value;
+    });
+    elements.holdTimeInput?.addEventListener('input', () => {
+        elements.holdTimeValue.textContent = elements.holdTimeInput.value;
+    });
+
     // Navigation Functions
     function showScreen(screenId) {
-        Object.values(screens).forEach(screen => {
+        Object valoriues(screens).forEach(screen => {
             if (screen) {
                 screen.classList.remove('active');
             }
@@ -89,6 +99,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Showing settings modal");
         elements.roundsInput.value = state.rounds;
         elements.holdTimeInput.value = state.initialHoldTime;
+        elements.roundsValue.textContent = state.rounds;
+        elements.holdTimeValue.textContent = state.initialHoldTime;
         elements.settingsModal.classList.add('active');
         elements.modalOverlay.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -98,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Hiding settings modal");
         elements.settingsModal.classList.remove('active');
         elements.modalOverlay.classList.remove('active');
-        document.body.style.overflow = 'hidden'; // Оставляем overflow: hidden
+        document.body.style.overflow = 'hidden';
     }
 
     function saveSettings() {
@@ -131,11 +143,12 @@ document.addEventListener('DOMContentLoaded', function() {
     async function countdown(seconds) {
         elements.phase.textContent = 'Get Ready';
         elements.round.textContent = `Round ${state.currentRound} of ${state.rounds}`;
-        for (let i = seconds; i > 0; i--) {
-            elements.counter.textContent = i;
-            setProgress((seconds - i) / seconds * 100);
-            await sleep(1000);
-        }
+        elements.counter.textContent = seconds;
+        // Плавная анимация для Get Ready
+        await Promise.all([
+            animateProgress(seconds * 1000, true, false),
+            updateCounterDuringHold(seconds)
+        ]);
         setProgress(0);
     }
 
@@ -168,7 +181,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Новая функция для обновления счетчика секунд во время задержки дыхания
     async function updateCounterDuringHold(duration) {
         for (let i = duration; i > 0; i--) {
             elements.counter.textContent = i;
@@ -208,9 +220,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const holdTime = getCurrentHoldTime();
         elements.phase.textContent = 'Hold';
         elements.counter.textContent = holdTime;
-        // Запускаем анимацию и обновление счетчика параллельно
         await Promise.all([
-            animateProgress(holdTime * 1000, true, false), // Плавная анимация без паузы
+            animateProgress(holdTime * 1000, true, false),
             updateCounterDuringHold(holdTime)
         ]);
 
@@ -221,9 +232,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Second retention (задержка на 15 секунд)
         elements.phase.textContent = 'Hold';
         elements.counter.textContent = 15;
-        // Запускаем анимацию и обновление счетчика параллельно
         await Promise.all([
-            animateProgress(15 * 1000, true, false), // Плавная анимация без паузы
+            animateProgress(15 * 1000, true, false),
             updateCounterDuringHold(15)
         ]);
 
