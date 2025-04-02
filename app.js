@@ -1,4 +1,4 @@
-// Mock Telegram WebApp for testing outside Telegram
+// app.js
 const tg = window.Telegram?.WebApp || {
     expand: () => console.log("Mock Telegram WebApp expand called"),
     ready: () => console.log("Mock Telegram WebApp ready called")
@@ -6,12 +6,9 @@ const tg = window.Telegram?.WebApp || {
 console.log("Telegram WebApp mock initialized");
 tg.expand();
 
-// Wait for DOM to be fully loaded
-console.log("Adding DOMContentLoaded listener...");
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM fully loaded, initializing app...");
 
-    // App State
     let state = {
         rounds: 3,
         initialHoldTime: 30,
@@ -22,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
         shouldStopAnimation: false
     };
 
-    // DOM Elements
     const screens = {
         home: document.getElementById('homeScreen'),
         exercise: document.getElementById('exerciseScreen'),
@@ -48,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
         breatheInButton: document.getElementById('breatheInButton')
     };
 
-    // Calculate circle circumference
     let circumference = 0;
     if (elements.progressRing) {
         const radius = elements.progressRing.r.baseVal.value;
@@ -63,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.progressRing.style.strokeDashoffset = offset;
     }
 
-    // Event Listeners
     elements.startButton?.addEventListener('click', startExercise);
     elements.settingsButton?.addEventListener('click', showSettings);
     elements.saveSettings?.addEventListener('click', saveSettings);
@@ -88,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function restartAnimation(element) {
-        if (!element) return;
+        if (!element || element.id === 'counter') return;
         element.style.animation = 'none';
         element.offsetHeight;
         element.style.animation = null;
@@ -156,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.counter.textContent = seconds;
         restartAnimation(elements.phase);
         restartAnimation(elements.round);
-        restartAnimation(elements.counter);
         
         await Promise.all([
             animateProgress(seconds * 1000, false, false),
@@ -203,10 +196,12 @@ document.addEventListener('DOMContentLoaded', function() {
     async function updateCounterDuringHold(duration) {
         if (!elements.counter) return;
         
-        for (let i = duration; i > 0; i--) {
+        for (let i = duration; i >= 0; i--) {
             if (!state.isHolding && duration !== 5) break;
             elements.counter.textContent = i;
-            restartAnimation(elements.counter);
+            elements.counter.style.animation = 'none';
+            elements.counter.offsetHeight;
+            elements.counter.style.animation = 'counterChange 0.5s ease forwards';
             await sleep(1000);
         }
     }
@@ -222,8 +217,6 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.phase.textContent = 'Inhale';
             elements.counter.textContent = state.breathCount;
             restartAnimation(elements.phase);
-            restartAnimation(elements.counter);
-            
             await animateProgress(i === 29 ? 3000 : 1500, true, true);
             
             elements.phase.textContent = 'Exhale';
@@ -235,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.phase.textContent = 'Hold';
         elements.counter.textContent = holdTime;
         restartAnimation(elements.phase);
-        restartAnimation(elements.counter);
 
         state.isHolding = true;
         
@@ -265,7 +257,6 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.phase.textContent = 'Hold';
         elements.counter.textContent = '15';
         restartAnimation(elements.phase);
-        restartAnimation(elements.counter);
         
         await Promise.all([
             animateProgress(15000, true, false),
