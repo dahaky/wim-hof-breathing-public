@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function() {
         breatheInButton: document.getElementById('breatheInButton')
     };
 
-    // Аудио элементы
     const sounds = {
         countdown: document.getElementById('countdownSound'),
         backgroundBreathing: document.getElementById('backgroundBreathing'),
@@ -51,6 +50,19 @@ document.addEventListener('DOMContentLoaded', function() {
         inhale: document.getElementById('inhaleSound'),
         exhale: document.getElementById('exhaleSound')
     };
+
+    // Добавляем обработку ошибок и логирование для аудио
+    Object.values(sounds).forEach(sound => {
+        sound.addEventListener('error', (e) => {
+            console.error(`Error loading audio ${sound.id}:`, e);
+        });
+        sound.addEventListener('canplaythrough', () => {
+            console.log(`Audio ${sound.id} is ready to play`);
+        });
+        sound.addEventListener('play', () => {
+            console.log(`Audio ${sound.id} started playing`);
+        });
+    });
 
     let circumference = 0;
     if (elements.progressRing) {
@@ -183,7 +195,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const startTime = performance.now();
             const endTime = startTime + duration;
 
-            // Запускаем звук обратного отсчета за 5 секунд до конца
             if (duration > 5000) {
                 setTimeout(() => {
                     if (!state.shouldStopAnimation) {
