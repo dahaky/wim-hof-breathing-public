@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
         exercise: document.getElementById('exerciseScreen'),
         completion: document.getElementById('completionScreen')
     };
-    console.log("Screens initialized:", screens);
 
     const elements = {
         startButton: document.getElementById('startButton'),
@@ -44,6 +43,15 @@ document.addEventListener('DOMContentLoaded', function() {
         breatheInButton: document.getElementById('breatheInButton')
     };
 
+    // Аудио элементы
+    const sounds = {
+        countdown: document.getElementById('countdownSound'),
+        backgroundBreathing: document.getElementById('backgroundBreathing'),
+        backgroundHold: document.getElementById('backgroundHold'),
+        inhale: document.getElementById('inhaleSound'),
+        exhale: document.getElementById('exhaleSound')
+    };
+
     let circumference = 0;
     if (elements.progressRing) {
         const radius = elements.progressRing.r.baseVal.value;
@@ -58,6 +66,13 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.progressRing.style.strokeDashoffset = offset;
     }
 
+    function stopAllSounds() {
+        Object.values(sounds).forEach(sound => {
+            sound.pause();
+            sound.currentTime = 0;
+        });
+    }
+
     elements.startButton?.addEventListener('click', startExercise);
     elements.settingsButton?.addEventListener('click', showSettings);
     elements.saveSettings?.addEventListener('click', saveSettings);
@@ -67,18 +82,16 @@ document.addEventListener('DOMContentLoaded', function() {
         state.isHolding = false;
         state.shouldStopAnimation = true;
         hideBreatheInButton();
+        sounds.backgroundHold.pause();
+        sounds.backgroundBreathing.play();
     });
 
     elements.roundsInput?.addEventListener('input', () => {
-        if (elements.roundsValue) {
-            elements.roundsValue.textContent = elements.roundsInput.value;
-        }
+        if (elements.roundsValue) elements.roundsValue.textContent = elements.roundsInput.value;
     });
 
     elements.holdTimeInput?.addEventListener('input', () => {
-        if (elements.holdTimeValue) {
-            elements.holdTimeValue.textContent = elements.holdTimeInput.value;
-        }
+        if (elements.holdTimeValue) elements.holdTimeValue.textContent = elements.holdTimeInput.value;
     });
 
     function restartAnimation(element) {
@@ -124,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
         state.breathCount = 0;
         state.isBreathing = false;
         setProgress(0);
+        stopAllSounds();
         showScreen('home');
     }
 
@@ -136,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function startExercise() {
+        stopAllSounds();
         showScreen('exercise');
         await startRound();
     }
@@ -151,11 +166,15 @@ document.addEventListener('DOMContentLoaded', function() {
         restartAnimation(elements.phase);
         restartAnimation(elements.round);
         
+        sounds.countdown.currentTime = 0;
+        sounds.countdown.play();
+        
         await Promise.all([
             animateProgress(seconds * 1000, false, false),
             updateCounterDuringHold(seconds)
         ]);
         setProgress(0);
+        sounds.countdown.pause();
     }
 
     async function animateProgress(duration, isIncreasing = true, pauseAtEnds = true) {
@@ -163,6 +182,16 @@ document.addEventListener('DOMContentLoaded', function() {
             state.shouldStopAnimation = false;
             const startTime = performance.now();
             const endTime = startTime + duration;
+
+            // Запускаем звук обратного отсчета за 5 секунд до конца
+            if (duration > 5000) {
+                setTimeout(() => {
+                    if (!state.shouldStopAnimation) {
+                        sounds.countdown.currentTime = 0;
+                        sounds.countdown.play();
+                    }
+                }, duration - 5000);
+            }
 
             function animate(currentTime) {
                 if (state.shouldStopAnimation) {
@@ -210,6 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
         await countdown(5);
         
         state.breathCount = 0;
+        sounds.backgroundBreathing.play();
         
         for (let i = 0; i < 30; i++) {
             state.breathCount++;
@@ -217,10 +247,14 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.phase.textContent = 'Inhale';
             elements.counter.textContent = state.breathCount;
             restartAnimation(elements.phase);
+            sounds.inhale.currentTime = 0;
+            sounds.inhale.play();
             await animateProgress(i === 29 ? 3000 : 1500, true, true);
             
             elements.phase.textContent = 'Exhale';
             restartAnimation(elements.phase);
+            sounds.exhale.currentTime = 0;
+            sounds.exhale.play();
             await animateProgress(i === 29 ? 3000 : 1500, false, true);
         }
 
@@ -228,6 +262,8 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.phase.textContent = 'Hold';
         elements.counter.textContent = holdTime;
         restartAnimation(elements.phase);
+        sounds.backgroundBreathing.pause();
+        sounds.backgroundHold.play();
 
         state.isHolding = true;
         
@@ -252,11 +288,17 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.phase.textContent = 'Deep Inhale';
         elements.counter.textContent = '';
         restartAnimation(elements.phase);
+        sounds.inhale.currentTime = 0;
+        sounds.inhale.play();
+        sounds.backgroundHold.pause();
+        sounds.backgroundBreathing.play();
         await animateProgress(3000, true, true);
 
         elements.phase.textContent = 'Hold';
         elements.counter.textContent = '15';
         restartAnimation(elements.phase);
+        sounds.backgroundBreathing.pause();
+        sounds.backgroundHold.play();
         
         await Promise.all([
             animateProgress(15000, true, false),
@@ -266,6 +308,10 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.phase.textContent = 'Deep Exhale';
         elements.counter.textContent = '';
         restartAnimation(elements.phase);
+        sounds.exhale.currentTime = 0;
+        sounds.exhale.play();
+        sounds.backgroundHold.pause();
+        sounds.backgroundBreathing.play();
         await animateProgress(3000, false, true);
 
         if (state.currentRound < state.rounds) {
@@ -273,6 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
             await sleep(2000);
             await startRound();
         } else {
+            stopAllSounds();
             showScreen('completion');
         }
     }
