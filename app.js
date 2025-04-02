@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
         currentRound: 1,
         breathCount: 0,
         isBreathing: false,
-        isHolding: false, // Флаг для отслеживания задержки дыхания
-        shouldStopAnimation: false // Флаг для прерывания анимации
+        isHolding: false,
+        shouldStopAnimation: false
     };
 
     // DOM Elements
@@ -47,171 +47,85 @@ document.addEventListener('DOMContentLoaded', function() {
         modalOverlay: document.querySelector('.modal-overlay'),
         breatheInButton: document.getElementById('breatheInButton')
     };
-    console.log("Elements initialized:", elements);
-
-    // Проверка, найдены ли кнопки
-    if (!elements.startButton) {
-        console.error("Start button not found in DOM!");
-    }
-    if (!elements.settingsButton) {
-        console.error("Settings button not found in DOM!");
-    }
-    if (!elements.breatheInButton) {
-        console.error("Breathe in button not found in DOM!");
-    }
 
     // Calculate circle circumference
-    let circumference = 0; // Инициализируем circumference в глобальной области
+    let circumference = 0;
     if (elements.progressRing) {
         const radius = elements.progressRing.r.baseVal.value;
         circumference = radius * 2 * Math.PI;
         elements.progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
         elements.progressRing.style.strokeDashoffset = circumference;
-        console.log("Progress ring initialized, circumference:", circumference);
-    } else {
-        console.error("Progress ring not found in DOM!");
     }
 
     function setProgress(percent) {
-        if (!elements.progressRing) {
-            console.error("Cannot set progress: progressRing is null");
-            return;
-        }
-        if (!circumference) {
-            console.error("Cannot set progress: circumference is not defined");
-            return;
-        }
+        if (!elements.progressRing) return;
         const offset = circumference - (percent / 100 * circumference);
         elements.progressRing.style.strokeDashoffset = offset;
     }
 
     // Event Listeners
-    if (elements.startButton) {
-        elements.startButton.addEventListener('click', () => {
-            console.log("Start button clicked");
-            startExercise();
-        });
-        console.log("Start button listener added");
-    }
-    if (elements.settingsButton) {
-        elements.settingsButton.addEventListener('click', () => {
-            console.log("Settings button clicked");
-            showSettings();
-        });
-        console.log("Settings button listener added");
-    }
-    if (elements.saveSettings) {
-        elements.saveSettings.addEventListener('click', () => {
-            console.log("Save settings button clicked");
-            saveSettings();
-        });
-        console.log("Save settings button listener added");
-    }
-    if (elements.restartButton) {
-        elements.restartButton.addEventListener('click', () => {
-            console.log("Restart button clicked");
-            resetAndShowHome();
-        });
-        console.log("Restart button listener added");
-    }
-    if (elements.modalOverlay) {
-        elements.modalOverlay.addEventListener('click', () => {
-            console.log("Modal overlay clicked");
-            hideSettings();
-        });
-        console.log("Modal overlay listener added");
-    }
-    if (elements.breatheInButton) {
-        elements.breatheInButton.addEventListener('click', () => {
-            console.log("Breathe in button clicked");
-            state.isHolding = false; // Прерываем задержку дыхания
-            state.shouldStopAnimation = true; // Прерываем анимацию прогресса
-            hideBreatheInButton();
-        });
-        console.log("Breathe in button listener added");
-    }
+    elements.startButton?.addEventListener('click', startExercise);
+    elements.settingsButton?.addEventListener('click', showSettings);
+    elements.saveSettings?.addEventListener('click', saveSettings);
+    elements.restartButton?.addEventListener('click', resetAndShowHome);
+    elements.modalOverlay?.addEventListener('click', hideSettings);
+    elements.breatheInButton?.addEventListener('click', () => {
+        state.isHolding = false;
+        state.shouldStopAnimation = true;
+        hideBreatheInButton();
+    });
 
-    // Обновление значений ползунков в реальном времени
-    if (elements.roundsInput && elements.roundsValue) {
-        elements.roundsInput.addEventListener('input', () => {
+    elements.roundsInput?.addEventListener('input', () => {
+        if (elements.roundsValue) {
             elements.roundsValue.textContent = elements.roundsInput.value;
-        });
-        console.log("Rounds input listener added");
-    }
-    if (elements.holdTimeInput && elements.holdTimeValue) {
-        elements.holdTimeInput.addEventListener('input', () => {
+        }
+    });
+
+    elements.holdTimeInput?.addEventListener('input', () => {
+        if (elements.holdTimeValue) {
             elements.holdTimeValue.textContent = elements.holdTimeInput.value;
-        });
-        console.log("Hold time input listener added");
-    }
+        }
+    });
 
-    // Функция для перезапуска анимации текста
     function restartAnimation(element) {
-        if (element) {
-            element.style.animation = 'none';
-            element.offsetHeight; // Триггерим reflow для перезапуска анимации
-            element.style.animation = null;
-        }
+        if (!element) return;
+        element.style.animation = 'none';
+        element.offsetHeight;
+        element.style.animation = null;
     }
 
-    // Navigation Functions
     function showScreen(screenId) {
-        console.log("Showing screen:", screenId);
         Object.values(screens).forEach(screen => {
-            if (screen) {
-                screen.classList.remove('active');
-            }
+            if (screen) screen.classList.remove('active');
         });
-        if (screens[screenId]) {
-            screens[screenId].classList.add('active');
-        } else {
-            console.error(`Screen ${screenId} not found!`);
-        }
+        if (screens[screenId]) screens[screenId].classList.add('active');
     }
 
     function showSettings() {
-        console.log("Showing settings modal");
-        if (elements.roundsInput && elements.holdTimeInput && elements.roundsValue && elements.holdTimeValue) {
+        if (elements.roundsInput && elements.holdTimeInput) {
             elements.roundsInput.value = state.rounds;
             elements.holdTimeInput.value = state.initialHoldTime;
-            elements.roundsValue.textContent = state.rounds;
-            elements.holdTimeValue.textContent = state.initialHoldTime;
-        } else {
-            console.error("Settings elements not found!");
+            if (elements.roundsValue) elements.roundsValue.textContent = state.rounds;
+            if (elements.holdTimeValue) elements.holdTimeValue.textContent = state.initialHoldTime;
         }
-        if (elements.settingsModal && elements.modalOverlay) {
-            elements.settingsModal.classList.add('active');
-            elements.modalOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        } else {
-            console.error("Settings modal or overlay not found!");
-        }
+        elements.settingsModal?.classList.add('active');
+        elements.modalOverlay?.classList.add('active');
     }
 
     function hideSettings() {
-        console.log("Hiding settings modal");
-        if (elements.settingsModal && elements.modalOverlay) {
-            elements.settingsModal.classList.remove('active');
-            elements.modalOverlay.classList.remove('active');
-            document.body.style.overflow = 'hidden';
-        } else {
-            console.error("Settings modal or overlay not found!");
-        }
+        elements.settingsModal?.classList.remove('active');
+        elements.modalOverlay?.classList.remove('active');
     }
 
     function saveSettings() {
-        console.log("Saving settings");
         if (elements.roundsInput && elements.holdTimeInput) {
             state.rounds = parseInt(elements.roundsInput.value) || 3;
             state.initialHoldTime = parseInt(elements.holdTimeInput.value) || 90;
             hideSettings();
-        } else {
-            console.error("Settings inputs not found!");
         }
     }
 
     function resetAndShowHome() {
-        console.log("Resetting and showing home screen");
         state.currentRound = 1;
         state.breathCount = 0;
         state.isBreathing = false;
@@ -219,22 +133,15 @@ document.addEventListener('DOMContentLoaded', function() {
         showScreen('home');
     }
 
-    // Функции для управления кнопкой Breathe in
     function showBreatheInButton() {
-        if (elements.breatheInButton) {
-            elements.breatheInButton.classList.add('active');
-        }
+        elements.breatheInButton?.classList.add('active');
     }
 
     function hideBreatheInButton() {
-        if (elements.breatheInButton) {
-            elements.breatheInButton.classList.remove('active');
-        }
+        elements.breatheInButton?.classList.remove('active');
     }
 
-    // Breathing Exercise Functions
     async function startExercise() {
-        console.log("Starting exercise");
         showScreen('exercise');
         await startRound();
     }
@@ -244,35 +151,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function countdown(seconds) {
-        if (!elements.phase || !elements.round || !elements.counter) {
-            console.error("Countdown elements not found!");
-            return;
-        }
         elements.phase.textContent = 'Get Ready';
         elements.round.textContent = `Round ${state.currentRound} of ${state.rounds}`;
         elements.counter.textContent = seconds;
         restartAnimation(elements.phase);
         restartAnimation(elements.round);
         restartAnimation(elements.counter);
-        console.log("Starting countdown for", seconds, "seconds");
+        
         await Promise.all([
-            animateProgress(seconds * 1000, false, false), // Убываем (как при выдохе)
+            animateProgress(seconds * 1000, false, false),
             updateCounterDuringHold(seconds)
         ]);
         setProgress(0);
-        console.log("Countdown finished");
     }
 
     async function animateProgress(duration, isIncreasing = true, pauseAtEnds = true) {
-        console.log("Starting animateProgress for", duration, "ms");
         return new Promise(resolve => {
-            state.shouldStopAnimation = false; // Сбрасываем флаг перед началом анимации
+            state.shouldStopAnimation = false;
             const startTime = performance.now();
             const endTime = startTime + duration;
 
             function animate(currentTime) {
                 if (state.shouldStopAnimation) {
-                    console.log("Animation stopped");
                     resolve();
                     return;
                 }
@@ -289,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     requestAnimationFrame(animate);
                 } else {
                     if (pauseAtEnds) {
-                        setTimeout(resolve, 500); // Пауза 0.5 секунды
+                        setTimeout(resolve, 500);
                     } else {
                         resolve();
                     }
@@ -301,130 +201,82 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function updateCounterDuringHold(duration) {
-        if (!elements.counter) {
-            console.error("Counter element not found!");
-            return;
-        }
-        console.log("Starting updateCounterDuringHold for", duration, "seconds");
+        if (!elements.counter) return;
+        
         for (let i = duration; i > 0; i--) {
-            if (!state.isHolding && duration !== 5) { // Прерываем, если задержка прервана (кроме Get Ready)
-                console.log("Counter interrupted due to hold break");
-                break;
-            }
+            if (!state.isHolding && duration !== 5) break;
             elements.counter.textContent = i;
             restartAnimation(elements.counter);
             await sleep(1000);
         }
-        console.log("updateCounterDuringHold finished");
     }
 
     async function startRound() {
-        console.log("Starting round", state.currentRound);
         await countdown(5);
         
         state.breathCount = 0;
-        console.log("Starting breathing phase");
         
-        // 30 breaths
         for (let i = 0; i < 30; i++) {
             state.breathCount++;
             
-            // Inhale
-            if (elements.phase && elements.counter) {
-                elements.phase.textContent = 'Inhale';
-                elements.counter.textContent = state.breathCount;
-                restartAnimation(elements.phase);
-                restartAnimation(elements.counter);
-            }
-            if (i === 29) {
-                await animateProgress(3000, true, true); // Глубокий вдох
-            } else {
-                await animateProgress(1500, true, true); // Обычный вдох
-            }
-            
-            // Exhale
-            if (elements.phase) {
-                elements.phase.textContent = 'Exhale';
-                restartAnimation(elements.phase);
-            }
-            if (i === 29) {
-                await animateProgress(3000, false, true); // Глубокий выдох
-            } else {
-                await animateProgress(1500, false, true); // Обычный выдох
-            }
-        }
-
-        // First retention (основная задержка дыхания)
-        const holdTime = getCurrentHoldTime();
-        if (elements.phase && elements.counter) {
-            elements.phase.textContent = 'Hold';
-            elements.counter.textContent = holdTime;
+            elements.phase.textContent = 'Inhale';
+            elements.counter.textContent = state.breathCount;
             restartAnimation(elements.phase);
             restartAnimation(elements.counter);
+            
+            await animateProgress(i === 29 ? 3000 : 1500, true, true);
+            
+            elements.phase.textContent = 'Exhale';
+            restartAnimation(elements.phase);
+            await animateProgress(i === 29 ? 3000 : 1500, false, true);
         }
 
-        state.isHolding = true; // Устанавливаем флаг задержки дыхания
-        const showButtonDelay = 10 * 1000; // 10 секунд
-        const hideButtonDelay = (holdTime - 5) * 1000; // За 5 секунд до конца
+        const holdTime = getCurrentHoldTime();
+        elements.phase.textContent = 'Hold';
+        elements.counter.textContent = holdTime;
+        restartAnimation(elements.phase);
+        restartAnimation(elements.counter);
 
-        // Планируем появление и исчезновение кнопки
+        state.isHolding = true;
+        
         setTimeout(() => {
-            if (state.isHolding) {
-                showBreatheInButton();
-                console.log("Breathe in button shown");
-            }
-        }, showButtonDelay);
+            if (state.isHolding) showBreatheInButton();
+        }, 10000);
 
         setTimeout(() => {
-            if (state.isHolding) {
-                hideBreatheInButton();
-                console.log("Breathe in button hidden");
-            }
-        }, hideButtonDelay);
+            if (state.isHolding) hideBreatheInButton();
+        }, (holdTime - 5) * 1000);
 
-        // Запускаем анимацию и отсчет параллельно
-        console.log("Starting first retention for", holdTime, "seconds");
         await Promise.all([
             animateProgress(holdTime * 1000, true, false),
             updateCounterDuringHold(holdTime)
         ]);
 
-        // Если задержка не была прервана, скрываем кнопку
-        if (state.isHolding) {
-            hideBreatheInButton();
-        }
+        if (state.isHolding) hideBreatheInButton();
 
-        // Сбрасываем флаг
         state.isHolding = false;
         state.shouldStopAnimation = false;
 
-        // Recovery breath
-        if (elements.phase) {
-            elements.phase.textContent = 'Deep Inhale';
-            restartAnimation(elements.phase);
-        }
+        elements.phase.textContent = 'Deep Inhale';
+        elements.counter.textContent = '';
+        restartAnimation(elements.phase);
         await animateProgress(3000, true, true);
 
-        // Second retention (задержка на 15 секунд)
-        if (elements.phase && elements.counter) {
-            elements.phase.textContent = 'Hold';
-            elements.counter.textContent = 15;
-            restartAnimation(elements.phase);
-            restartAnimation(elements.counter);
-        }
+        elements.phase.textContent = 'Hold';
+        elements.counter.textContent = '15';
+        restartAnimation(elements.phase);
+        restartAnimation(elements.counter);
+        
         await Promise.all([
-            animateProgress(15 * 1000, true, false),
+            animateProgress(15000, true, false),
             updateCounterDuringHold(15)
         ]);
 
-        // Final exhale
-        if (elements.phase) {
-            elements.phase.textContent = 'Deep Exhale';
-            restartAnimation(elements.phase);
-        }
+        elements.phase.textContent = 'Deep Exhale';
+        elements.counter.textContent = '';
+        restartAnimation(elements.phase);
         await animateProgress(3000, false, true);
 
-        // Check if more rounds
         if (state.currentRound < state.rounds) {
             state.currentRound++;
             await sleep(2000);
@@ -434,10 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Utility Functions
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
-
-    console.log("App initialization completed");
 });
