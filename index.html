@@ -10,6 +10,15 @@
 </head>
 <body>
     <div class="container">
+        <!-- Переключатель звука теперь здесь, на уровне container -->
+        <div class="sound-toggle">
+            <label class="switch">
+                <span class="label-text">Sound</span>
+                <input type="checkbox" id="soundToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
         <div id="homeScreen" class="screen active">
             <h1>Wim Hof Breathing</h1>
             <p class="description">
@@ -20,18 +29,11 @@
             <div class="button-group">
                 <button id="startButton" class="primary-button">Start</button>
                 <button id="settingsButton" class="secondary-button">Settings</button>
-                <a href="https://t.me/+80634XXusWo1OTcy" target="_blank" class="secondary-button">Join the Group</a>
+                <!-- Убрали кнопку "Join the Group" -->
             </div>
         </div>
 
         <div id="exerciseScreen" class="screen">
-            <div class="sound-toggle">
-                <label class="switch">
-                    <span class="label-text">Sound</span>
-                    <input type="checkbox" id="soundToggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
             <div class="breathing-circle">
                 <svg class="progress-ring">
                     <circle class="progress-ring__background" r="136" cx="140" cy="140"/>
