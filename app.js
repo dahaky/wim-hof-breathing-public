@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
         isBreathing: false,
         isHolding: false,
         shouldStopAnimation: false,
-        soundEnabled: false
+        soundEnabled: false,
+        currentPhase: 'Get Ready' // Добавляем для отслеживания текущей фазы
     };
 
     const screens = {
@@ -86,6 +87,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!state.soundEnabled) {
             stopAllSounds();
+        } else {
+            // Включаем звук в зависимости от текущей фазы
+            playSoundForCurrentPhase();
         }
     }
 
@@ -105,6 +109,39 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function playSoundForCurrentPhase() {
+        if (!state.soundEnabled) return;
+
+        switch (state.currentPhase) {
+            case 'Get Ready':
+                playSound(sounds.countdown);
+                break;
+            case 'Inhale':
+                playSound(sounds.inhale);
+                playSound(sounds.backgroundBreathing);
+                break;
+            case 'Exhale':
+                playSound(sounds.exhale);
+                playSound(sounds.backgroundBreathing);
+                break;
+            case 'Hold':
+                if (state.isHolding) {
+                    playSound(sounds.backgroundHold);
+                } else {
+                    playSound(sounds.backgroundHold);
+                }
+                break;
+            case 'Deep Inhale':
+                playSound(sounds.inhale);
+                playSound(sounds.backgroundBreathing);
+                break;
+            case 'Deep Exhale':
+                playSound(sounds.exhale);
+                playSound(sounds.backgroundBreathing);
+                break;
+        }
+    }
+
     elements.startButton?.addEventListener('click', startExercise);
     elements.settingsButton?.addEventListener('click', showSettings);
     elements.saveSettings?.addEventListener('click', saveSettings);
@@ -119,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sounds.backgroundHold.pause();
             playSound(sounds.backgroundBreathing);
         }
+        state.currentPhase = 'Deep Inhale'; // Обновляем фазу
     });
 
     elements.roundsInput?.addEventListener('input', () => {
@@ -174,6 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setProgress(0);
         stopAllSounds();
         showScreen('home');
+        state.currentPhase = 'Get Ready';
     }
 
     function showBreatheInButton() {
@@ -195,6 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function countdown(seconds) {
+        state.currentPhase = 'Get Ready';
         elements.phase.textContent = 'Get Ready';
         elements.round.textContent = `Round ${state.currentRound} of ${state.rounds}`;
         elements.counter.textContent = seconds;
@@ -272,6 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
         for (let i = 0; i < 30; i++) {
             state.breathCount++;
             
+            state.currentPhase = 'Inhale';
             elements.phase.textContent = 'Inhale';
             elements.counter.textContent = state.breathCount;
             restartAnimation(elements.phase);
@@ -281,6 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             await animateProgress(i === 29 ? 3000 : 1500, true, true);
             
+            state.currentPhase = 'Exhale';
             elements.phase.textContent = 'Exhale';
             restartAnimation(elements.phase);
             if (state.soundEnabled) {
@@ -290,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const holdTime = getCurrentHoldTime();
+        state.currentPhase = 'Hold';
         elements.phase.textContent = 'Hold';
         elements.counter.textContent = holdTime;
         restartAnimation(elements.phase);
@@ -319,6 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
         state.isHolding = false;
         state.shouldStopAnimation = false;
 
+        state.currentPhase = 'Deep Inhale';
         elements.phase.textContent = 'Deep Inhale';
         elements.counter.textContent = '';
         restartAnimation(elements.phase);
@@ -329,6 +373,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         await animateProgress(3000, true, true);
 
+        state.currentPhase = 'Hold';
         elements.phase.textContent = 'Hold';
         elements.counter.textContent = '15';
         restartAnimation(elements.phase);
@@ -342,6 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateCounterDuringHold(15)
         ]);
 
+        state.currentPhase = 'Deep Exhale';
         elements.phase.textContent = 'Deep Exhale';
         elements.counter.textContent = '';
         restartAnimation(elements.phase);
@@ -359,6 +405,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             stopAllSounds();
             showScreen('completion');
+            state.currentPhase = 'Get Ready';
         }
     }
 
