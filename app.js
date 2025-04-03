@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
         isHolding: false,
         shouldStopAnimation: false,
         soundEnabled: false,
-        currentPhase: 'Get Ready'
+        currentPhase: 'Get Ready',
+        hasInteracted: false // Флаг для отслеживания первого взаимодействия
     };
 
     const screens = {
@@ -64,6 +65,9 @@ document.addEventListener('DOMContentLoaded', function() {
             sound.addEventListener('play', () => {
                 console.log(`Audio ${sound.id} started playing`);
             });
+            sound.addEventListener('pause', () => {
+                console.log(`Audio ${sound.id} paused`);
+            });
         }
     });
 
@@ -81,21 +85,43 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.progressRing.style.strokeDashoffset = offset;
     }
 
+    // Функция для "разблокировки" всех аудиофайлов
+    function unlockAudio() {
+        if (state.hasInteracted) return; // Разблокируем только один раз
+
+        console.log("Unlocking all audio files...");
+        Object.values(sounds).forEach(sound => {
+            if (sound) {
+                sound.volume = 0; // Устанавливаем громкость 0, чтобы не было слышно
+                sound.play().then(() => {
+                    sound.pause();
+                    sound.currentTime = 0;
+                    sound.volume = 1; // Возвращаем громкость
+                    console.log(`Audio ${sound.id} unlocked`);
+                }).catch(e => {
+                    console.error(`Failed to unlock audio ${sound.id}:`, e);
+                });
+            }
+        });
+        state.hasInteracted = true;
+    }
+
     function toggleSound() {
         state.soundEnabled = !state.soundEnabled;
         console.log(`Sound toggled: ${state.soundEnabled ? 'ON' : 'OFF'}`);
         
-        if (!state.soundEnabled) {
-            stopAllSounds();
-        } else {
+        if (state.soundEnabled) {
+            unlockAudio(); // Разблокируем все аудиофайлы при первом включении
             playSoundForCurrentPhase();
+        } else {
+            stopAllSounds();
         }
     }
 
     function playSound(sound) {
         if (state.soundEnabled && sound) {
             sound.currentTime = 0;
-            sound.play().catch(e => console.log('Sound play error:', e));
+            sound.play().catch(e => console.log(`Sound play error for ${sound.id}:`, e));
         }
     }
 
@@ -111,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function playSoundForCurrentPhase() {
         if (!state.soundEnabled) return;
 
+        console.log(`Playing sound for phase: ${state.currentPhase}`);
         switch (state.currentPhase) {
             case 'Get Ready':
                 playSound(sounds.countdown);
@@ -178,7 +205,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         if (screens[screenId]) screens[screenId].classList.add('active');
 
-        // Показываем/скрываем sound-toggle в зависимости от экрана
         if (screenId === 'exercise') {
             elements.soundToggleContainer?.classList.add('active');
         } else {
@@ -265,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return new Promise(resolve => {
             state.shouldStopAnimation = false;
             const startTime = performance.now();
-            const fiveSecondsBeforeEnd = duration - 5000; // 5 секунд до конца
+            const fiveSecondsBeforeEnd = duration - 5000;
 
             function animate(currentTime) {
                 if (state.shouldStopAnimation) {
@@ -281,7 +307,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 setProgress(progress);
 
-                // Воспроизводим звук countdown за 5 секунд до конца фазы Hold
                 if (state.currentPhase === 'Hold' && elapsed >= fiveSecondsBeforeEnd && elapsed < fiveSecondsBeforeEnd + 16.67) {
                     if (state.soundEnabled) {
                         playSound(sounds.countdown);
@@ -307,7 +332,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!elements.counter) return;
         
         for (let i = duration; i > 0; i--) {
-            // Убрали условие if (!state.isHolding && duration !== 5) break;
             if (i === 1) continue;
             elements.counter.textContent = i;
             await sleep(1000);
@@ -382,7 +406,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (state.soundEnabled) {
             playSound(sounds.inhale);
             sounds.backgroundHold.pause();
-            // Убрали playSound(sounds.backgroundBreathing);
         }
         await animateProgress(3000, true, true);
 
