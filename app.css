@@ -1,4 +1,3 @@
-/* app.css */
 :root {
     --tg-theme-bg-color: #ffffff;
     --tg-theme-text-color: #000000;
@@ -8,6 +7,10 @@
     --secondary-color: #f1f1f1;
     --circle-size: min(280px, 80vmin);
     --progress-width: 8px;
+    --switch-width: 51px;
+    --switch-height: 31px;
+    --switch-padding: 2px;
+    --switch-animation-duration: 0.2s;
 }
 
 * {
@@ -272,46 +275,12 @@ h1 {
     height: 100%;
 }
 
-@keyframes phaseAnimation {
-    0% {
-        opacity: 0;
-        transform: translateY(20px) scale(0.9);
-    }
-    50% {
-        transform: translateY(-5px) scale(1.02);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes slideUp {
-    0% {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes counterChange {
-    0% {
-        opacity: 0.3;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 .phase-text {
     font-size: clamp(20px, 5vmin, 24px);
     font-weight: 600;
     margin-bottom: clamp(8px, 2vmin, 10px);
+    opacity: 0;
+    transform: translateY(20px);
     animation: phaseAnimation 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
@@ -319,6 +288,8 @@ h1 {
     font-size: clamp(14px, 4vmin, 16px);
     color: var(--primary-color);
     margin-bottom: clamp(8px, 2vmin, 10px);
+    opacity: 0;
+    transform: translateY(15px);
     animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     animation-delay: 0.2s;
 }
@@ -327,8 +298,9 @@ h1 {
     font-size: clamp(36px, 10vmin, 48px);
     font-weight: 700;
     color: var(--primary-color);
-    position: relative;
     height: clamp(36px, 10vmin, 48px);
+    position: relative;
+    transition: opacity 0.3s ease;
 }
 
 .breathe-in-button {
@@ -372,6 +344,100 @@ h1 {
     opacity: 1;
     visibility: visible;
     transition: opacity 0.5s ease, visibility 0s ease 0s;
+}
+
+.sound-toggle {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.label-text {
+    font-size: clamp(14px, 4vmin, 16px);
+    font-weight: 500;
+    color: var(--tg-theme-text-color);
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.slider {
+    position: relative;
+    display: inline-block;
+    width: var(--switch-width);
+    height: var(--switch-height);
+    background-color: rgba(120, 120, 128, 0.32);
+    border-radius: 34px;
+    transition: background-color var(--switch-animation-duration);
+    cursor: pointer;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    height: calc(var(--switch-height) - var(--switch-padding) * 2);
+    width: calc(var(--switch-height) - var(--switch-padding) * 2);
+    left: var(--switch-padding);
+    bottom: var(--switch-padding);
+    background-color: white;
+    border-radius: 50%;
+    transition: transform var(--switch-animation-duration) cubic-bezier(0.4, 0, 0.2, 1),
+                background-color var(--switch-animation-duration);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(calc(var(--switch-width) - var(--switch-height)));
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+@keyframes phaseAnimation {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+    }
+    50% {
+        transform: translateY(-5px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes slideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (hover: hover) {
