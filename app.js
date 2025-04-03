@@ -1,4 +1,3 @@
-// app.js
 const tg = window.Telegram?.WebApp || {
     expand: () => console.log("Mock Telegram WebApp expand called"),
     ready: () => console.log("Mock Telegram WebApp ready called")
@@ -16,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         isHolding: false,
         shouldStopAnimation: false,
         soundEnabled: false,
-        currentPhase: 'Get Ready' // Добавляем для отслеживания текущей фазы
+        currentPhase: 'Get Ready'
     };
 
     const screens = {
@@ -41,7 +40,8 @@ document.addEventListener('DOMContentLoaded', function() {
         settingsModal: document.querySelector('.settings-modal'),
         modalOverlay: document.querySelector('.modal-overlay'),
         breatheInButton: document.getElementById('breatheInButton'),
-        soundToggle: document.getElementById('soundToggle')
+        soundToggle: document.getElementById('soundToggle'),
+        soundToggleContainer: document.querySelector('.sound-toggle')
     };
 
     const sounds = {
@@ -88,7 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!state.soundEnabled) {
             stopAllSounds();
         } else {
-            // Включаем звук в зависимости от текущей фазы
             playSoundForCurrentPhase();
         }
     }
@@ -133,7 +132,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case 'Deep Inhale':
                 playSound(sounds.inhale);
-                playSound(sounds.backgroundBreathing);
                 break;
             case 'Deep Exhale':
                 playSound(sounds.exhale);
@@ -156,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sounds.backgroundHold.pause();
             playSound(sounds.backgroundBreathing);
         }
-        state.currentPhase = 'Deep Inhale'; // Обновляем фазу
+        state.currentPhase = 'Deep Inhale';
     });
 
     elements.roundsInput?.addEventListener('input', () => {
@@ -179,6 +177,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (screen) screen.classList.remove('active');
         });
         if (screens[screenId]) screens[screenId].classList.add('active');
+
+        // Показываем/скрываем sound-toggle в зависимости от экрана
+        if (screenId === 'exercise') {
+            elements.soundToggleContainer?.classList.add('active');
+        } else {
+            elements.soundToggleContainer?.classList.remove('active');
+        }
     }
 
     function showSettings() {
@@ -260,6 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return new Promise(resolve => {
             state.shouldStopAnimation = false;
             const startTime = performance.now();
+            const fiveSecondsBeforeEnd = duration - 5000; // 5 секунд до конца
 
             function animate(currentTime) {
                 if (state.shouldStopAnimation) {
@@ -274,6 +280,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     : (1 - progressFraction) * 100;
 
                 setProgress(progress);
+
+                // Воспроизводим звук countdown за 5 секунд до конца фазы Hold
+                if (state.currentPhase === 'Hold' && elapsed >= fiveSecondsBeforeEnd && elapsed < fiveSecondsBeforeEnd + 16.67) {
+                    if (state.soundEnabled) {
+                        playSound(sounds.countdown);
+                    }
+                }
 
                 if (progressFraction < 1) {
                     requestAnimationFrame(animate);
@@ -294,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!elements.counter) return;
         
         for (let i = duration; i > 0; i--) {
-            if (!state.isHolding && duration !== 5) break;
+            // Убрали условие if (!state.isHolding && duration !== 5) break;
             if (i === 1) continue;
             elements.counter.textContent = i;
             await sleep(1000);
@@ -369,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (state.soundEnabled) {
             playSound(sounds.inhale);
             sounds.backgroundHold.pause();
-            playSound(sounds.backgroundBreathing);
+            // Убрали playSound(sounds.backgroundBreathing);
         }
         await animateProgress(3000, true, true);
 
