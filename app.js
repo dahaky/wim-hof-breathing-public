@@ -3,12 +3,10 @@ const tg = window.Telegram?.WebApp || {
     expand: () => console.log("Mock Telegram WebApp expand called"),
     ready: () => console.log("Mock Telegram WebApp ready called")
 };
-console.log("Telegram WebApp mock initialized");
+
 tg.expand();
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM fully loaded, initializing app...");
-
     let state = {
         rounds: 3,
         initialHoldTime: 30,
@@ -16,7 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
         breathCount: 0,
         isBreathing: false,
         isHolding: false,
-        shouldStopAnimation: false
+        shouldStopAnimation: false,
+        soundEnabled: false
     };
 
     const screens = {
@@ -40,7 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
         counter: document.getElementById('counter'),
         settingsModal: document.querySelector('.settings-modal'),
         modalOverlay: document.querySelector('.modal-overlay'),
-        breatheInButton: document.getElementById('breatheInButton')
+        breatheInButton: document.getElementById('breatheInButton'),
+        soundToggle: document.getElementById('soundToggle')
     };
 
     const sounds = {
@@ -53,15 +53,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Добавляем обработку ошибок и логирование для аудио
     Object.values(sounds).forEach(sound => {
-        sound.addEventListener('error', (e) => {
-            console.error(`Error loading audio ${sound.id}:`, e);
-        });
-        sound.addEventListener('canplaythrough', () => {
-            console.log(`Audio ${sound.id} is ready to play`);
-        });
-        sound.addEventListener('play', () => {
-            console.log(`Audio ${sound.id} started playing`);
-        });
+        if (sound) {
+            sound.addEventListener('error', (e) => {
+                console.error(`Error loading audio ${sound.id}:`, e);
+            });
+            sound.addEventListener('canplaythrough', () => {
+                console.log(`Audio ${sound.id} is ready to play`);
+            });
+            sound.addEventListener('play', () => {
+                console.log(`Audio ${sound.id} started playing`);
+            });
+        }
     });
 
     let circumference = 0;
@@ -78,10 +80,28 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.progressRing.style.strokeDashoffset = offset;
     }
 
+    function toggleSound() {
+        state.soundEnabled = !state.soundEnabled;
+        console.log(`Sound toggled: ${state.soundEnabled ? 'ON' : 'OFF'}`);
+        
+        if (!state.soundEnabled) {
+            stopAllSounds();
+        }
+    }
+
+    function playSound(sound) {
+        if (state.soundEnabled && sound) {
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log('Sound play error:', e));
+        }
+    }
+
     function stopAllSounds() {
         Object.values(sounds).forEach(sound => {
-            sound.pause();
-            sound.currentTime = 0;
+            if (sound) {
+                sound.pause();
+                sound.currentTime = 0;
+            }
         });
     }
 
@@ -90,12 +110,15 @@ document.addEventListener('DOMContentLoaded', function() {
     elements.saveSettings?.addEventListener('click', saveSettings);
     elements.restartButton?.addEventListener('click', resetAndShowHome);
     elements.modalOverlay?.addEventListener('click', hideSettings);
+    elements.soundToggle?.addEventListener('change', toggleSound);
     elements.breatheInButton?.addEventListener('click', () => {
         state.isHolding = false;
         state.shouldStopAnimation = true;
         hideBreatheInButton();
-        sounds.backgroundHold.pause();
-        sounds.backgroundBreathing.play();
+        if (state.soundEnabled) {
+            sounds.backgroundHold.pause();
+            playSound(sounds.backgroundBreathing);
+        }
     });
 
     elements.roundsInput?.addEventListener('input', () => {
@@ -178,31 +201,25 @@ document.addEventListener('DOMContentLoaded', function() {
         restartAnimation(elements.phase);
         restartAnimation(elements.round);
         
-        sounds.countdown.currentTime = 0;
-        sounds.countdown.play();
+        if (state.soundEnabled) {
+            playSound(sounds.countdown);
+        }
         
         await Promise.all([
             animateProgress(seconds * 1000, false, false),
             updateCounterDuringHold(seconds)
         ]);
+        
         setProgress(0);
-        sounds.countdown.pause();
+        if (state.soundEnabled) {
+            sounds.countdown.pause();
+        }
     }
 
     async function animateProgress(duration, isIncreasing = true, pauseAtEnds = true) {
         return new Promise(resolve => {
             state.shouldStopAnimation = false;
             const startTime = performance.now();
-            const endTime = startTime + duration;
-
-            if (duration > 5000) {
-                setTimeout(() => {
-                    if (!state.shouldStopAnimation) {
-                        sounds.countdown.currentTime = 0;
-                        sounds.countdown.play();
-                    }
-                }, duration - 5000);
-            }
 
             function animate(currentTime) {
                 if (state.shouldStopAnimation) {
@@ -222,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     requestAnimationFrame(animate);
                 } else {
                     if (pauseAtEnds) {
-                        setTimeout(resolve, 500);
+                        setTimeout(resolve, 800);
                     } else {
                         resolve();
                     }
@@ -236,12 +253,10 @@ document.addEventListener('DOMContentLoaded', function() {
     async function updateCounterDuringHold(duration) {
         if (!elements.counter) return;
         
-        for (let i = duration; i >= 0; i--) {
+        for (let i = duration; i > 0; i--) {
             if (!state.isHolding && duration !== 5) break;
+            if (i === 1) continue;
             elements.counter.textContent = i;
-            elements.counter.style.animation = 'none';
-            elements.counter.offsetHeight;
-            elements.counter.style.animation = 'counterChange 0.5s ease forwards';
             await sleep(1000);
         }
     }
@@ -250,7 +265,9 @@ document.addEventListener('DOMContentLoaded', function() {
         await countdown(5);
         
         state.breathCount = 0;
-        sounds.backgroundBreathing.play();
+        if (state.soundEnabled) {
+            playSound(sounds.backgroundBreathing);
+        }
         
         for (let i = 0; i < 30; i++) {
             state.breathCount++;
@@ -258,14 +275,17 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.phase.textContent = 'Inhale';
             elements.counter.textContent = state.breathCount;
             restartAnimation(elements.phase);
-            sounds.inhale.currentTime = 0;
-            sounds.inhale.play();
+            
+            if (state.soundEnabled) {
+                playSound(sounds.inhale);
+            }
             await animateProgress(i === 29 ? 3000 : 1500, true, true);
             
             elements.phase.textContent = 'Exhale';
             restartAnimation(elements.phase);
-            sounds.exhale.currentTime = 0;
-            sounds.exhale.play();
+            if (state.soundEnabled) {
+                playSound(sounds.exhale);
+            }
             await animateProgress(i === 29 ? 3000 : 1500, false, true);
         }
 
@@ -273,8 +293,11 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.phase.textContent = 'Hold';
         elements.counter.textContent = holdTime;
         restartAnimation(elements.phase);
-        sounds.backgroundBreathing.pause();
-        sounds.backgroundHold.play();
+        
+        if (state.soundEnabled) {
+            sounds.backgroundBreathing.pause();
+            playSound(sounds.backgroundHold);
+        }
 
         state.isHolding = true;
         
@@ -299,17 +322,20 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.phase.textContent = 'Deep Inhale';
         elements.counter.textContent = '';
         restartAnimation(elements.phase);
-        sounds.inhale.currentTime = 0;
-        sounds.inhale.play();
-        sounds.backgroundHold.pause();
-        sounds.backgroundBreathing.play();
+        if (state.soundEnabled) {
+            playSound(sounds.inhale);
+            sounds.backgroundHold.pause();
+            playSound(sounds.backgroundBreathing);
+        }
         await animateProgress(3000, true, true);
 
         elements.phase.textContent = 'Hold';
         elements.counter.textContent = '15';
         restartAnimation(elements.phase);
-        sounds.backgroundBreathing.pause();
-        sounds.backgroundHold.play();
+        if (state.soundEnabled) {
+            sounds.backgroundBreathing.pause();
+            playSound(sounds.backgroundHold);
+        }
         
         await Promise.all([
             animateProgress(15000, true, false),
@@ -319,10 +345,11 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.phase.textContent = 'Deep Exhale';
         elements.counter.textContent = '';
         restartAnimation(elements.phase);
-        sounds.exhale.currentTime = 0;
-        sounds.exhale.play();
-        sounds.backgroundHold.pause();
-        sounds.backgroundBreathing.play();
+        if (state.soundEnabled) {
+            playSound(sounds.exhale);
+            sounds.backgroundHold.pause();
+            playSound(sounds.backgroundBreathing);
+        }
         await animateProgress(3000, false, true);
 
         if (state.currentRound < state.rounds) {
