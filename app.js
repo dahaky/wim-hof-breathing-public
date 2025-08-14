@@ -1,3 +1,5 @@
+// app.js
+
 const tg = window.Telegram?.WebApp || {
     expand: () => console.log("Mock Telegram WebApp expand called"),
     ready: () => console.log("Mock Telegram WebApp ready called")
@@ -5,10 +7,36 @@ const tg = window.Telegram?.WebApp || {
 
 tg.expand();
 
+let wakeLock = null;
+
+async function requestWakeLock() {
+    if ('wakeLock' in navigator) {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake lock acquired');
+        } catch (err) {
+            console.error('Wake lock request failed:', err);
+        }
+    }
+}
+
+async function releaseWakeLock() {
+    if (wakeLock) {
+        try {
+            await wakeLock.release();
+            wakeLock = null;
+            console.log('Wake lock released');
+        } catch (err) {
+            console.error('Wake lock release failed:', err);
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     let state = {
         rounds: 3,
         initialHoldTime: 30,
+        breathDuration: 1.5,
         currentRound: 1,
         breathCount: 0,
         isBreathing: false,
@@ -16,7 +44,9 @@ document.addEventListener('DOMContentLoaded', function() {
         shouldStopAnimation: false,
         soundEnabled: false,
         currentPhase: 'Get Ready',
-        hasInteracted: false // Флаг для отслеживания первого взаимодействия
+        hasInteracted: false,
+        lastHoldTime: 0,
+        isPaused: false
     };
 
     const screens = {
@@ -32,8 +62,10 @@ document.addEventListener('DOMContentLoaded', function() {
         restartButton: document.getElementById('restartButton'),
         roundsInput: document.getElementById('rounds'),
         holdTimeInput: document.getElementById('holdTime'),
+        breathDurationInput: document.getElementById('breathDuration'),
         roundsValue: document.getElementById('roundsValue'),
         holdTimeValue: document.getElementById('holdTimeValue'),
+        breathDurationValue: document.getElementById('breathDurationValue'),
         progressRing: document.querySelector('.progress-ring__circle'),
         phase: document.getElementById('phase'),
         round: document.getElementById('round'),
@@ -41,8 +73,13 @@ document.addEventListener('DOMContentLoaded', function() {
         settingsModal: document.querySelector('.settings-modal'),
         modalOverlay: document.querySelector('.modal-overlay'),
         breatheInButton: document.getElementById('breatheInButton'),
+        pauseButton: document.getElementById('pauseButton'),
         soundToggle: document.getElementById('soundToggle'),
-        soundToggleContainer: document.querySelector('.sound-toggle')
+        soundToggleContainer: document.querySelector('.sound-toggle'),
+        themeToggle: document.getElementById('themeToggle'),
+        nextRoundMessage: document.getElementById('nextRoundMessage'),
+        results: document.getElementById('results'),
+        shareButton: document.getElementById('shareButton')
     };
 
     const sounds = {
@@ -167,6 +204,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Load theme preference
+    const isDark = localStorage.getItem('dark') === 'true';
+    document.body.classList.toggle('dark', isDark);
+    if (elements.themeToggle) elements.themeToggle.checked = isDark;
+
     elements.startButton?.addEventListener('click', startExercise);
     elements.settingsButton?.addEventListener('click', showSettings);
     elements.saveSettings?.addEventListener('click', saveSettings);
@@ -183,6 +225,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         state.currentPhase = 'Deep Inhale';
     });
+    elements.pauseButton?.addEventListener('click', togglePause);
+    elements.themeToggle?.addEventListener('change', () => {
+        const checked = elements.themeToggle.checked;
+        document.body.classList.toggle('dark', checked);
+        localStorage.setItem('dark', checked);
+    });
 
     elements.roundsInput?.addEventListener('input', () => {
         if (elements.roundsValue) elements.roundsValue.textContent = elements.roundsInput.value;
@@ -191,6 +239,19 @@ document.addEventListener('DOMContentLoaded', function() {
     elements.holdTimeInput?.addEventListener('input', () => {
         if (elements.holdTimeValue) elements.holdTimeValue.textContent = elements.holdTimeInput.value;
     });
+
+    elements.breathDurationInput?.addEventListener('input', () => {
+        if (elements.breathDurationValue) elements.breathDurationValue.textContent = elements.breathDurationInput.value;
+    });
+
+    function togglePause() {
+        state.isPaused = !state.isPaused;
+        if (state.isPaused) {
+            elements.pauseButton.textContent = 'Resume';
+        } else {
+            elements.pauseButton.textContent = 'Pause';
+        }
+    }
 
     function restartAnimation(element) {
         if (!element || element.id === 'counter') return;
@@ -209,15 +270,21 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.soundToggleContainer?.classList.add('active');
         } else {
             elements.soundToggleContainer?.classList.remove('active');
+            if (screenId === 'completion') {
+                elements.results.textContent = `You completed the practice. Your breath hold time: ${state.lastHoldTime} seconds.`;
+                elements.shareButton.href = `https://t.me/share/url?url=https://t.me/breathingapp_bot&text=I completed the Wim Hof Breathing practice and held my breath for ${state.lastHoldTime} seconds!`;
+            }
         }
     }
 
     function showSettings() {
-        if (elements.roundsInput && elements.holdTimeInput) {
+        if (elements.roundsInput && elements.holdTimeInput && elements.breathDurationInput) {
             elements.roundsInput.value = state.rounds;
             elements.holdTimeInput.value = state.initialHoldTime;
+            elements.breathDurationInput.value = state.breathDuration;
             if (elements.roundsValue) elements.roundsValue.textContent = state.rounds;
             if (elements.holdTimeValue) elements.holdTimeValue.textContent = state.initialHoldTime;
+            if (elements.breathDurationValue) elements.breathDurationValue.textContent = state.breathDuration;
         }
         elements.settingsModal?.classList.add('active');
         elements.modalOverlay?.classList.add('active');
@@ -229,9 +296,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function saveSettings() {
-        if (elements.roundsInput && elements.holdTimeInput) {
+        if (elements.roundsInput && elements.holdTimeInput && elements.breathDurationInput) {
             state.rounds = parseInt(elements.roundsInput.value) || 3;
             state.initialHoldTime = parseInt(elements.holdTimeInput.value) || 90;
+            state.breathDuration = parseFloat(elements.breathDurationInput.value) || 1.5;
             hideSettings();
         }
     }
@@ -242,6 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
         state.isBreathing = false;
         setProgress(0);
         stopAllSounds();
+        releaseWakeLock();
         showScreen('home');
         state.currentPhase = 'Get Ready';
     }
@@ -254,7 +323,16 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.breatheInButton?.classList.remove('active');
     }
 
+    function showPauseButton() {
+        elements.pauseButton?.classList.add('active');
+    }
+
+    function hidePauseButton() {
+        elements.pauseButton?.classList.remove('active');
+    }
+
     async function startExercise() {
+        await requestWakeLock();
         stopAllSounds();
         showScreen('exercise');
         await startRound();
@@ -292,6 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
             state.shouldStopAnimation = false;
             const startTime = performance.now();
             const fiveSecondsBeforeEnd = duration - 5000;
+            let hasPlayedCountdown = false;
 
             function animate(currentTime) {
                 if (state.shouldStopAnimation) {
@@ -300,17 +379,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 const elapsed = currentTime - startTime;
-                const progressFraction = Math.min(elapsed / duration, 1);
+                let progressFraction = Math.min(elapsed / duration, 1);
+                // Add easing for smoother animation
+                progressFraction = easeInOut(progressFraction);
                 const progress = isIncreasing
                     ? progressFraction * 100
                     : (1 - progressFraction) * 100;
 
                 setProgress(progress);
 
-                if (state.currentPhase === 'Hold' && elapsed >= fiveSecondsBeforeEnd && elapsed < fiveSecondsBeforeEnd + 16.67) {
+                if (state.currentPhase === 'Hold' && elapsed >= fiveSecondsBeforeEnd && !hasPlayedCountdown) {
                     if (state.soundEnabled) {
                         playSound(sounds.countdown);
                     }
+                    hasPlayedCountdown = true;
                 }
 
                 if (progressFraction < 1) {
@@ -328,13 +410,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function easeInOut(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
     async function updateCounterDuringHold(duration) {
         if (!elements.counter) return;
         
-        for (let i = duration; i > 0; i--) {
-            if (i === 1) continue;
-            elements.counter.textContent = i;
+        let current = duration;
+        elements.counter.textContent = current;
+        while (current > 0) {
             await sleep(1000);
+            current--;
+            elements.counter.textContent = current;
         }
     }
 
@@ -357,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (state.soundEnabled) {
                 playSound(sounds.inhale);
             }
-            await animateProgress(i === 29 ? 3000 : 1500, true, true);
+            await animateProgress(i === 29 ? state.breathDuration * 2 * 1000 : state.breathDuration * 1000, true, true);
             
             state.currentPhase = 'Exhale';
             elements.phase.textContent = 'Exhale';
@@ -365,13 +453,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (state.soundEnabled) {
                 playSound(sounds.exhale);
             }
-            await animateProgress(i === 29 ? 3000 : 1500, false, true);
+            await animateProgress(i === 29 ? state.breathDuration * 2 * 1000 : state.breathDuration * 1000, false, true);
         }
 
         const holdTime = getCurrentHoldTime();
         state.currentPhase = 'Hold';
         elements.phase.textContent = 'Hold';
-        elements.counter.textContent = holdTime;
         restartAnimation(elements.phase);
         
         if (state.soundEnabled) {
@@ -380,6 +467,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         state.isHolding = true;
+        elements.pauseButton.textContent = 'Pause';
+        state.isPaused = false;
         
         setTimeout(() => {
             if (state.isHolding) showBreatheInButton();
@@ -389,12 +478,73 @@ document.addEventListener('DOMContentLoaded', function() {
             if (state.isHolding) hideBreatheInButton();
         }, (holdTime - 5) * 1000);
 
-        await Promise.all([
-            animateProgress(holdTime * 1000, true, false),
-            updateCounterDuringHold(holdTime)
-        ]);
+        setTimeout(() => {
+            if (state.isHolding) showPauseButton();
+        }, (holdTime - 10) * 1000);
+
+        // Pausable hold
+        const holdStart = performance.now();
+        let pausedTime = 0;
+        let pauseStart = 0;
+        let hasPlayedCountdown = false;
+
+        const animateHold = new Promise(resolve => {
+            const totalDuration = holdTime * 1000;
+            let rafId;
+
+            const animate = (time) => {
+                if (state.shouldStopAnimation) {
+                    resolve();
+                    return;
+                }
+
+                if (state.isPaused) {
+                    if (!pauseStart) pauseStart = performance.now();
+                    rafId = requestAnimationFrame(animate);
+                    return;
+                } else if (pauseStart) {
+                    pausedTime += performance.now() - pauseStart;
+                    pauseStart = 0;
+                }
+
+                const elapsed = time - holdStart - pausedTime;
+                let fraction = Math.min(elapsed / totalDuration, 1);
+                fraction = easeInOut(fraction);
+                setProgress(fraction * 100);
+
+                if (elapsed >= totalDuration - 5000 && !hasPlayedCountdown) {
+                    if (state.soundEnabled) playSound(sounds.countdown);
+                    hasPlayedCountdown = true;
+                }
+
+                if (fraction < 1) {
+                    rafId = requestAnimationFrame(animate);
+                } else {
+                    resolve();
+                }
+            };
+
+            rafId = requestAnimationFrame(animate);
+        });
+
+        let currentCounter = holdTime;
+        elements.counter.textContent = currentCounter;
+        let counterInterval = setInterval(() => {
+            if (!state.isPaused && currentCounter > 0) {
+                currentCounter--;
+                elements.counter.textContent = currentCounter;
+            }
+            if (currentCounter <= 0) clearInterval(counterInterval);
+        }, 1000);
+
+        await animateHold;
+        clearInterval(counterInterval);
+
+        const actualHold = Math.round((performance.now() - holdStart - pausedTime) / 1000);
+        state.lastHoldTime = actualHold;
 
         if (state.isHolding) hideBreatheInButton();
+        hidePauseButton();
 
         state.isHolding = false;
         state.shouldStopAnimation = false;
@@ -407,7 +557,7 @@ document.addEventListener('DOMContentLoaded', function() {
             playSound(sounds.inhale);
             sounds.backgroundHold.pause();
         }
-        await animateProgress(3000, true, true);
+        await animateProgress(state.breathDuration * 2 * 1000, true, true);
 
         state.currentPhase = 'Hold';
         elements.phase.textContent = 'Hold';
@@ -432,11 +582,14 @@ document.addEventListener('DOMContentLoaded', function() {
             sounds.backgroundHold.pause();
             playSound(sounds.backgroundBreathing);
         }
-        await animateProgress(3000, false, true);
+        await animateProgress(state.breathDuration * 2 * 1000, false, true);
 
         if (state.currentRound < state.rounds) {
+            elements.nextRoundMessage.textContent = `Starting Round ${state.currentRound + 1}`;
+            elements.nextRoundMessage.style.display = 'block';
+            await sleep(3000);
+            elements.nextRoundMessage.style.display = 'none';
             state.currentRound++;
-            await sleep(2000);
             await startRound();
         } else {
             stopAllSounds();
