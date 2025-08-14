@@ -79,7 +79,8 @@ document.addEventListener('DOMContentLoaded', function() {
         themeToggle: document.getElementById('themeToggle'),
         nextRoundMessage: document.getElementById('nextRoundMessage'),
         results: document.getElementById('results'),
-        shareButton: document.getElementById('shareButton')
+        shareButton: document.getElementById('shareButton'),
+        breathingCircle: document.querySelector('.breathing-circle')
     };
 
     const sounds = {
@@ -587,8 +588,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (state.currentRound < state.rounds) {
             elements.nextRoundMessage.textContent = `Starting Round ${state.currentRound + 1}`;
             elements.nextRoundMessage.style.display = 'block';
+            elements.breathingCircle.classList.add('hidden');
             await sleep(3000);
             elements.nextRoundMessage.style.display = 'none';
+            elements.breathingCircle.classList.remove('hidden');
             state.currentRound++;
             await startRound();
         } else {
