@@ -33,7 +33,7 @@ body.dark .setting-item input[type="range"] {
 }
 
 body.dark .sound-toggle {
-    background: rgba(0, 0, 0, 0.8);
+    background: var(--tg-theme-bg-color);
 }
 
 body.dark .slider {
@@ -196,13 +196,15 @@ h1 {
     border-radius: 20px 20px 0 0;
     padding: clamp(20px, 5vmin, 24px);
     box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.1);
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
     transform: translateY(100%);
+    opacity: 0;
 }
 
 .settings-modal.active {
     transform: translateY(0);
+    opacity: 1;
 }
 
 .setting-item {
@@ -269,6 +271,11 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.breathing-circle.hidden {
+    opacity: 0;
 }
 
 .progress-ring {
@@ -468,13 +475,43 @@ input:focus + .slider {
 
 .next-round-message {
     position: absolute;
-    top: 10%;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    font-size: clamp(18px, 5vmin, 22px);
+    transform: translate(-50%, -50%);
+    font-size: clamp(24px, 6vmin, 32px);
+    font-weight: bold;
     color: var(--primary-color);
     display: none;
     z-index: 10;
+    text-align: center;
+}
+
+.theme-toggle {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    opacity: 1;
+}
+
+body.dark .theme-toggle {
+    background: var(--tg-theme-bg-color);
+}
+
+.results-block {
+    background: var(--secondary-color);
+    padding: clamp(16px, 4vmin, 20px);
+    border-radius: 12px;
+    margin: clamp(16px, 4vmin, 20px) 0;
+    text-align: center;
+    width: 100%;
+}
+
+.results-block p {
+    margin-bottom: clamp(12px, 3vmin, 16px);
 }
 
 @keyframes phaseAnimation {
