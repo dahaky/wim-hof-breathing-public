@@ -1,3 +1,5 @@
+/* app.css */
+
 :root {
     --tg-theme-bg-color: #ffffff;
     --tg-theme-text-color: #000000;
@@ -11,6 +13,35 @@
     --switch-height: 31px;
     --switch-padding: 2px;
     --switch-animation-duration: 0.2s;
+}
+
+body.dark {
+    --tg-theme-bg-color: #1c1c1e;
+    --tg-theme-text-color: #ffffff;
+    --tg-theme-button-color: #ff9500;
+    --tg-theme-button-text-color: #1c1c1e;
+    --primary-color: #ff9500;
+    --secondary-color: #2c2c2e;
+}
+
+body.dark .description {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.dark .setting-item input[type="range"] {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .sound-toggle {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+body.dark .slider {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .progress-ring__background {
+    stroke: rgba(255, 149, 0, 0.1);
 }
 
 * {
@@ -255,7 +286,7 @@ h1 {
     stroke-linecap: round;
     transform: rotate(-90deg);
     transform-origin: 50% 50%;
-    transition: stroke-dashoffset 16.67ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: stroke-dashoffset 0.05s cubic-bezier(0.4, 0, 0.2, 1); /* Adjusted for smoother animation */
 }
 
 .progress-ring__background {
@@ -282,7 +313,7 @@ h1 {
     margin-bottom: clamp(8px, 2vmin, 10px);
     opacity: 0;
     transform: translateY(20px);
-    animation: phaseAnimation 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: phaseAnimation 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; /* Slower animation */
 }
 
 .round-text {
@@ -291,8 +322,8 @@ h1 {
     margin-bottom: clamp(8px, 2vmin, 10px);
     opacity: 0;
     transform: translateY(15px);
-    animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    animation-delay: 0.2s;
+    animation: slideUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; /* Slower animation */
+    animation-delay: 0.3s;
 }
 
 .counter {
@@ -304,7 +335,8 @@ h1 {
     transition: opacity 0.3s ease;
 }
 
-.breathe-in-button {
+.breathe-in-button,
+.pause-button {
     position: fixed;
     left: 50%;
     bottom: max(5vh, 40px);
@@ -317,7 +349,8 @@ h1 {
     z-index: 100;
 }
 
-.breathe-in-button.active {
+.breathe-in-button.active,
+.pause-button.active {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
     visibility: visible;
@@ -359,7 +392,7 @@ h1 {
     padding: 10px;
     background: rgba(255, 255, 255, 0.8);
     border-radius: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Removed box-shadow */
     opacity: 0;
     visibility: hidden;
     transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -431,6 +464,17 @@ input:checked + .slider:before {
 
 input:focus + .slider {
     box-shadow: 0 0 1px var(--primary-color);
+}
+
+.next-round-message {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: clamp(18px, 5vmin, 22px);
+    color: var(--primary-color);
+    display: none;
+    z-index: 10;
 }
 
 @keyframes phaseAnimation {
